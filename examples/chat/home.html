@@ -7,7 +7,7 @@ window.onload = function () {
     var conn;
     var msg = document.getElementById("msg");
     var log = document.getElementById("log");
-
+    var name = window.prompt("Please enter your name:", "Anonymous") || "Anonymous";
     function appendLog(item) {
         var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
         log.appendChild(item);
@@ -29,7 +29,7 @@ window.onload = function () {
     };
 
     if (window["WebSocket"]) {
-        conn = new WebSocket("ws://" + document.location.host + "/ws");
+        conn = new WebSocket("ws://" + document.location.host + "/ws?name=" + encodeURIComponent(name));
         conn.onclose = function (evt) {
             var item = document.createElement("div");
             item.innerHTML = "<b>Connection closed.</b>";
@@ -39,6 +39,7 @@ window.onload = function () {
             var messages = evt.data.split('\n');
             for (var i = 0; i < messages.length; i++) {
                 var item = document.createElement("div");
+                item.className = messages[i].startsWith(name + ": ") ? "message mine" : "message theirs";
                 item.innerText = messages[i];
                 appendLog(item);
             }
@@ -74,6 +75,26 @@ body {
     right: 0.5em;
     bottom: 3em;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.message {
+    border-radius: 0.75em;
+    max-width: 70%;
+    padding: 0.5em 0.75em;
+    overflow-wrap: anywhere;
+}
+
+.message.mine {
+    align-self: flex-end;
+    background: #d9fdd3;
+}
+
+.message.theirs {
+    align-self: flex-start;
+    background: #eeeeee;
 }
 
 #form {

@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -39,7 +40,8 @@ var upgrader = websocket.Upgrader{
 
 // Client is a middleman between the websocket connection and the hub.
 type Client struct {
-	hub *Hub
+	hub  *Hub
+	name string
 
 	// The websocket connection.
 	conn *websocket.Conn
@@ -70,6 +72,7 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		message = append([]byte(c.name+": "), message...)
 		c.hub.broadcast <- message
 	}
 }
@@ -127,7 +130,11 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	name := strings.TrimSpace(r.URL.Query().Get("name"))
+	if name == "" {
+		name = "Anonymous"
+	}
+	client := &Client{hub: hub, name: name, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
