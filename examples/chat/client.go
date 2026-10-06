@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -72,8 +73,16 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		message = append([]byte(c.name+": "), message...)
-		c.hub.broadcast <- message
+		chatMessage, err := json.Marshal(Message{
+			SenderID:      c.name,
+			SourceGateway: c.hub.gatewayID,
+			Payload:       string(message),
+			Timestamp:     time.Now().UnixMilli(),
+		})
+		if err != nil {
+			continue
+		}
+		c.hub.broadcast <- chatMessage
 	}
 }
 

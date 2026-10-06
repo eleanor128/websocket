@@ -38,9 +38,24 @@ window.onload = function () {
         conn.onmessage = function (evt) {
             var messages = evt.data.split('\n');
             for (var i = 0; i < messages.length; i++) {
+                if (!messages[i]) continue;
                 var item = document.createElement("div");
-                item.className = messages[i].startsWith(name + ": ") ? "message mine" : "message theirs";
-                item.innerText = messages[i];
+                
+                try {
+                    // === 嘗試解析後端傳來的 Message JSON ===
+                    var parsed = JSON.parse(messages[i]);
+                    var sender = parsed.sender_id || "Anonymous";
+                    var source = parsed.source_gateway ? " @ " + parsed.source_gateway : "";
+                    var payload = parsed.payload || "";
+
+                    item.className = (sender === name) ? "message mine" : "message theirs";
+                    item.innerText = "[" + sender + source + "]: " + payload;
+                } catch (e) {
+                    // === 若非 JSON 格式則走原本的純文字邏輯 ===
+                    item.className = messages[i].startsWith(name + ": ") ? "message mine" : "message theirs";
+                    item.innerText = messages[i];
+                }
+
                 appendLog(item);
             }
         };
