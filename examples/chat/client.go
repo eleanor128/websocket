@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"log"
 	"net/http"
 	"strings"
@@ -29,8 +30,9 @@ const (
 )
 
 var (
-	newline = []byte{'\n'}
-	space   = []byte{' '}
+	benchmark = flag.Bool("benchmark", false, "preserve JSON message boundaries for workload replay")
+	newline   = []byte{'\n'}
+	space     = []byte{' '}
 )
 
 var upgrader = websocket.Upgrader{
@@ -60,7 +62,11 @@ func (c *Client) readPump() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
+	if *benchmark {
+		c.conn.SetReadLimit(1024 * 1024)
+	} else {
+		c.conn.SetReadLimit(maxMessageSize)
+	}
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
@@ -71,8 +77,10 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		message = append([]byte(c.name+": "), message...)
+		if !*benchmark {
+			message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+			message = append([]byte(c.name+": "), message...)
+		}
 		c.hub.broadcast <- message
 	}
 }
@@ -106,6 +114,9 @@ func (c *Client) writePump() {
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
+			if *benchmark {
+				n = 0
+			}
 			for i := 0; i < n; i++ {
 				w.Write(newline)
 				w.Write(<-c.send)

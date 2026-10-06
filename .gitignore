@@ -23,3 +23,9 @@ _testmain.go
 
 .idea/
 *.iml
+
+# Local load-generator run artifacts
+/results/
+/workloads/
+
+COMP631.pem
