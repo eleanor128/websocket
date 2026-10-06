@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "stage": "pilot-candidate-not-final",
+  "source_file": "0389b65f31955070df63ae563f08a3a058ab38b6_0.csv",
+  "source_sha256": "7289984bc7842fc93cc2fb988a07fd0cda75519d837a64829a1d37471dd6a146",
+  "generator_sha256": "e2d04ff12697b6bcd965d3a65ffde770e040d87ccac773d71c8fe9ae08bfff16",
+  "config_sha256": "c732da515609e6805676895c14fb202dae2ddfc443733d6fbc2c6cd781533115",
+  "clients_sha256": "5694f80876768239ebdb0903f064873631c188f4e77c7493f3781a4c87e6c46d",
+  "user_selection": "first distinct users encountered in the fixed window, original CSV order",
+  "source_rows": 632,
+  "active_senders": 200,
+  "total_clients": 200,
+  "duration_seconds": "60",
+  "first_retained_source_time_seconds": "0.0",
+  "unscaled_repeat_period_seconds": "600.0",
+  "unscaled_repeat_boundary_gap_seconds": "1.0",
+  "recipient_policy": "all fixed clients including sender; resolve room-all in clients.json",
+  "timestamp_policy": "relative nanoseconds rounded half-up; retain JSONL order for ties",
+  "rate_policy": "uniform source-time scaling; finite-window rate may differ due to preserved bursts",
+  "single_server_policy": "same trace and clients; connect all clients to the single endpoint, ignore logical gateway routing",
+  "traces": [
+    {
+      "file": "rate-10.jsonl",
+      "sha256": "a6c71af5c87ceba5baac80de92d05db4062260a15ae310721da650f17d14ef3e",
+      "target_cycle_average_messages_per_second": "10",
+      "scheduled_window_messages_per_second": "10.13333333333333333333333333",
+      "time_scale_factor": "9.493670886075949367088607595",
+      "messages": 608,
+      "expected_deliveries": 121600,
+      "publications_by_gateway": {
+        "G0": 149,
+        "G1": 155,
+        "G2": 173,
+        "G3": 131
+      },
+      "max_payload_bytes": 588,
+      "last_scheduled_offset_ns": 59724000000,
+      "scaled_repeat_boundary_gap_seconds": "0.1053333333333333333333333333"
+    },
+    {
+      "file": "rate-20.jsonl",
+      "sha256": "6b6aced8abb54db85073d033b9624778d0390e20d4a5bd363a7a71e393fb7c3c",
+      "target_cycle_average_messages_per_second": "20",
+      "scheduled_window_messages_per_second": "20.5",
+      "time_scale_factor": "18.98734177215189873417721519",
+      "messages": 1230,
+      "expected_deliveries": 246000,
+      "publications_by_gateway": {
+        "G0": 298,
+        "G1": 318,
+        "G2": 350,
+        "G3": 264
+      },
+      "max_payload_bytes": 588,
+      "last_scheduled_offset_ns": 59671333333,
+      "scaled_repeat_boundary_gap_seconds": "0.05266666666666666666666666667"
+    },
+    {
+      "file": "rate-40.jsonl",
+      "sha256": "e9ce53e6b66d99da5ecaaa05dba4f01c97c0be9fbd2444d3b406e9e73de195aa",
+      "target_cycle_average_messages_per_second": "40",
+      "scheduled_window_messages_per_second": "41.16666666666666666666666667",
+      "time_scale_factor": "37.97468354430379746835443038",
+      "messages": 2470,
+      "expected_deliveries": 494000,
+      "publications_by_gateway": {
+        "G0": 594,
+        "G1": 645,
+        "G2": 700,
+        "G3": 531
+      },
+      "max_payload_bytes": 588,
+      "last_scheduled_offset_ns": 59934666667,
+      "scaled_repeat_boundary_gap_seconds": "0.02633333333333333333333333333"
+    },
+    {
+      "file": "rate-80.jsonl",
+      "sha256": "67fbc60d73a0563f221ac459b36e2b672f48e4e1c469ab93d30174ebff4f9d86",
+      "target_cycle_average_messages_per_second": "80",
+      "scheduled_window_messages_per_second": "82.55",
+      "time_scale_factor": "75.94936708860759493670886076",
+      "messages": 4953,
+      "expected_deliveries": 990600,
+      "publications_by_gateway": {
+        "G0": 1193,
+        "G1": 1296,
+        "G2": 1398,
+        "G3": 1066
+      },
+      "max_payload_bytes": 588,
+      "last_scheduled_offset_ns": 59882000000,
+      "scaled_repeat_boundary_gap_seconds": "0.01316666666666666666666666667"
+    },
+    {
+      "file": "rate-160.jsonl",
+      "sha256": "0a6b5e0d4344a18d9eda8a346ea8021a6099dd44fe91eb05c2836e0fc3fdce0b",
+      "target_cycle_average_messages_per_second": "160",
+      "scheduled_window_messages_per_second": "162.0333333333333333333333333",
+      "time_scale_factor": "151.8987341772151898734177215",
+      "messages": 9722,
+      "expected_deliveries": 1944400,
+      "publications_by_gateway": {
+        "G0": 2344,
+        "G1": 2553,
+        "G2": 2740,
+        "G3": 2085
+      },
+      "max_payload_bytes": 588,
+      "last_scheduled_offset_ns": 59993916667,
+      "scaled_repeat_boundary_gap_seconds": "0.006583333333333333333333333334"
+    }
+  ]
+}
