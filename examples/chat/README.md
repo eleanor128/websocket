@@ -1,3 +1,13 @@
+```
+go run . -addr=":8080" -id="G0" -topology="star"
+
+go run . -addr=":8081" -id="G1" -topology="star" -peers="ws://localhost:8080/inter-gw"
+
+go run . -addr=":8082" -id="G2" -topology="star" -peers="ws://localhost:8080/inter-gw"
+
+go run . -addr=":8083" -id="G3" -topology="star" -peers="ws://localhost:8080/inter-gw"
+```
+
 # Chat Example
 
 This application shows how to use the
