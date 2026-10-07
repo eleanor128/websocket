@@ -41,6 +41,14 @@ To automatically build and launch four **real** local Star processes, wait for o
 python cmd/loadgen/test_star.py --output results/star-check-01
 ```
 
+Run all five pilot rates sequentially (10, 20, 40, 80, 160), one independent four-process deployment per rate:
+
+```powershell
+python cmd/loadgen/test_star_matrix.py --output results/star-matrix-01
+```
+
+This takes approximately six minutes or longer, including building and saving results. It runs regression tests first, checks trace hashes against the manifest, and saves individual runs, logs, source hashes, `matrix.json` and `REPORT.md`. Failed rates are retained and the remaining rates still run. The workload `.gitattributes` rule preserves LF line endings because byte hashes would change under automatic CRLF conversion. Each rate is run once; this is a local functional pilot, not the proposal's three-repeat resource-controlled main experiment.
+
 Requires Go and Python 3. The script uses temporary local ports, saves gateway logs and the generated endpoint configuration, and terminates its own gateway processes on completion/failure. Use a fresh output directory each time. `--trace`, `--clients` and `--duration` can select another workload. This checks functional integration, not controlled EC2 performance. The current Star implementation synchronously writes peers in its hub loop (with a timeout); a slow peer may still block local processing. Separate peer queues/resource instrumentation remain necessary before interpreting saturation experiments.
 
 Copy `cmd/loadgen/gateways.example.json` and replace the four URLs with the client-facing WebSocket endpoints of your gateway deployment. The example uses four local ports; gateways may instead be on separate hosts with the same port. The file must contain exactly G0, G1, G2 and G3, each with a distinct ws/wss endpoint. `-url` and `-gateways` are mutually exclusive; omitting both retains the localhost Single default.
