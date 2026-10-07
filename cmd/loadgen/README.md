@@ -18,6 +18,31 @@ Replace localhost with the existing server's reachable address. Deploy the updat
 
 ## Four-gateway mode
 
+### Existing Star implementation
+
+Use the updated `examples/chat` code on all four gateways. Start G0 first, then its three leaves, all with `-benchmark`. From the repository root, in four separate terminals:
+
+```powershell
+go run ./examples/chat -benchmark -topology star -id G0 -addr :8081
+go run ./examples/chat -benchmark -topology star -id G1 -addr :8082 -peers ws://127.0.0.1:8081/inter-gw
+go run ./examples/chat -benchmark -topology star -id G2 -addr :8083 -peers ws://127.0.0.1:8081/inter-gw
+go run ./examples/chat -benchmark -topology star -id G3 -addr :8084 -peers ws://127.0.0.1:8081/inter-gw
+```
+
+For multiple EC2 hosts, replace each leaf's peer address with G0's reachable private address; configure the generator's four client endpoints separately. Current Star uses the same listening port for `/ws` and `/inter-gw`; classify by actual flows when adding network shaping. Peers dial only once, so start G0 first and verify `/healthz`: G0 must report three connected peers, each leaf one. A connection failure requires restarting that leaf; automatic reconnection is not implemented.
+
+The generator wire format is unchanged. Client ingress stamps `source_gateway` and clears untrusted `from_gateway`; Star forwarding preserves `run_id`. Without these changes, remote deliveries lose run identity and messages can bounce back to the source. Plain-text browser chat is wrapped in the same server-side envelope when benchmark mode is off. Benchmark mode expects structured loadgen messages.
+
+Star now enforces its edges: G0 accepts only G1/G2/G3; leaves reject incoming overlay connections and initiate exactly one connection to G0. Self/unknown peers are rejected before WebSocket upgrade, duplicate live peer IDs return HTTP 409, and leaf routing can send local publications only to G0. Outgoing leaves verify the destination's `X-Gateway-ID: G0` handshake declaration rather than silently labeling any destination G0. This is configuration validation for the controlled experiment, not cryptographic peer authentication. Update all gateways together; old servers without the handshake header are rejected.
+
+To automatically build and launch four **real** local Star processes, wait for overlay readiness, replay the existing 60-second trace and check for missing/duplicate/invalid deliveries:
+
+```powershell
+python cmd/loadgen/test_star.py --output results/star-check-01
+```
+
+Requires Go and Python 3. The script uses temporary local ports, saves gateway logs and the generated endpoint configuration, and terminates its own gateway processes on completion/failure. Use a fresh output directory each time. `--trace`, `--clients` and `--duration` can select another workload. This checks functional integration, not controlled EC2 performance. The current Star implementation synchronously writes peers in its hub loop (with a timeout); a slow peer may still block local processing. Separate peer queues/resource instrumentation remain necessary before interpreting saturation experiments.
+
 Copy `cmd/loadgen/gateways.example.json` and replace the four URLs with the client-facing WebSocket endpoints of your gateway deployment. The example uses four local ports; gateways may instead be on separate hosts with the same port. The file must contain exactly G0, G1, G2 and G3, each with a distinct ws/wss endpoint. `-url` and `-gateways` are mutually exclusive; omitting both retains the localhost Single default.
 
 ```powershell

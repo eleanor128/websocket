@@ -26,6 +26,5 @@ _testmain.go
 
 # Local load-generator run artifacts
 /results/
-/workloads/
 
 COMP631.pem

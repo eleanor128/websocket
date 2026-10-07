@@ -1,0 +1,17 @@
+{
+  "stage": "pilot-candidate-not-final",
+  "source_file": "0389b65f31955070df63ae563f08a3a058ab38b6_0.csv",
+  "window_start_seconds": "0",
+  "window_end_seconds": "600",
+  "selected_users": 200,
+  "total_clients": 200,
+  "gateways": 4,
+  "duration_seconds": "60",
+  "rates_messages_per_second": [
+    "10",
+    "20",
+    "40",
+    "80",
+    "160"
+  ]
+}

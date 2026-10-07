@@ -5,8 +5,11 @@
 package main
 
 import (
-	"bytes"
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -77,12 +80,35 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		if !*benchmark {
-			message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-			message = append([]byte(c.name+": "), message...)
+		message, err = clientMessage(message, c.name, c.hub.gatewayID, *benchmark)
+		if err != nil {
+			log.Printf("invalid client message: %v", err)
+			break
 		}
 		c.hub.broadcast <- message
 	}
+}
+
+// Routing metadata is stamped at ingress, never trusted from a client.
+func clientMessage(raw []byte, sender, gateway string, structured bool) ([]byte, error) {
+	var msg Message
+	if structured {
+		if err := json.Unmarshal(raw, &msg); err != nil {
+			return nil, err
+		}
+		if msg.MessageID == "" || msg.RunID == "" || msg.SenderID != sender {
+			return nil, fmt.Errorf("run_id/message_id required and sender_id must match connection name")
+		}
+	} else {
+		var id [16]byte
+		if _, err := rand.Read(id[:]); err != nil {
+			return nil, err
+		}
+		msg = Message{MessageID: hex.EncodeToString(id[:]), SenderID: sender, Payload: string(raw), Timestamp: time.Now().UnixMilli()}
+	}
+	msg.SourceGateway = gateway
+	msg.FromGateway = ""
+	return json.Marshal(msg)
 }
 
 // writePump pumps messages from the hub to the websocket connection.
