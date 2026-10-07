@@ -1,0 +1,1208 @@
+{
+  "recipient_sets": {
+    "room-all": [
+      "774f1f5f1abf673c5152de73939b172e3de14cdb",
+      "0d60c3fa8060bb9aa43a8caf99445ed896e5774e",
+      "f8a44e670fa2b0eb60919eba49dff3ca1b21b1b9",
+      "3bc85a9eff6de002000c3cb843f91fe525266105",
+      "8769342e5aeeca34f4715b92dcf7890089e64c4b",
+      "8db28818e091dcc1de29f264d8026539ed373ee4",
+      "65b45cd05f209b6b68a8b59581486c44e203ff58",
+      "c324460cd28e2dbc85bd7581a28b72a4b1e5688f",
+      "090351ad93de015de30885ff444f7a9791473905",
+      "4bb9e6968ebcb550c3cb342e3fdc0af82aaffda3",
+      "3777c85668d04c14d242ecac407bb8cbe2223a7e",
+      "48545b55855223b03bd254090fb9f823321e7024",
+      "2f9145aa04d21b7a783b4af3ef9a4a2182180957",
+      "b82ef32699d9ade320c682ee23545d5d7a8f5742",
+      "317fd91e14acca370c590389a268169cb062a209",
+      "c1e43942f4b351287eb982817e563467f73448f1",
+      "3bbdbb55e2310c71bf40c3d37ef4dc35a3e40ad4",
+      "6281890e82da2be2820cf094ad9d85abde1834bf",
+      "3f66f58eff47e1443288eac89ae16a3c0ba06fc8",
+      "57294e373b185715f611b1c799d1886d38f9ff97",
+      "450aa35f5581f29d76122b26dbb2e491d1cc8b39",
+      "092c35d072b015b30211885385a12c624ef751c9",
+      "33c5828300dbbd60aad84161cb81823a3eb6fcdd",
+      "de458c6399d72b810637a1a5555d85cbff7e7445",
+      "d9bd1c8b5e565b309a7a61f5e971322047b7c816",
+      "0ab530c35c0a051aed19bd08d3a3762d2b2a7fb3",
+      "3c991332a5a191d0e1229b3458de9c7ae8b89f16",
+      "d1db631936cabed458f7300867e8288de043b659",
+      "b09cfd1f3b68942e51fd31932f94bcd3d39fbce5",
+      "310887577430ae54cb13404924475b8df8cd3c48",
+      "24197dcbf33cdef4d34dd7574d0e3e0a1e44fdb3",
+      "4a664dce9a9a30c66919389e4f8eecce3db295d3",
+      "80adaabb22f9511bea08bca03dee56e22106adb7",
+      "00b415f145e673ee4252bc81a3261574540292ec",
+      "9b7de210315ddfb428703a5b7388a02704eeb340",
+      "1ea1e87b6db055dfed7317a1bdbd638e11a64acb",
+      "0f027f52c6a330b4e4072de522a4da07230bd9fd",
+      "0c064bfe547f60ba681ab8010a2288c10f2c1608",
+      "313c9cde06c3d88279007d481d750a3e35eaf9b0",
+      "f8a0991ea6ebc1cf1227397ead1a6971dca14fbd",
+      "474b4e7e04680688bb46cb01dca30c2e5f788f7e",
+      "1c66d2b6455441c137e5ba40d1516a46a51cc5de",
+      "0e1538e06dac6daedd12ee5b86281d49c5b945a9",
+      "457bc1dac3a641d8a4583ca24b5da73a1ecc0520",
+      "e49bec5b2004756433f112d10f9235d3e1c343e0",
+      "7cd9012c916df1beea79091e0482c500adf0e3e1",
+      "83f9d2f8ed423ec8c352247f6bfb0d65cb0f8ed9",
+      "1183a1197de598c6a34fbfc9189f10673bf344f8",
+      "3d952aa6b633893a15e761723eae4bae55d627ff",
+      "da55d462b4a79853494558cdebd8c9363a96a5a8",
+      "be34b8d31c20b8af64d9919cf231b1955efd610d",
+      "64e692445f919f48abb3de8ce89a2429bfcd37d6",
+      "5576b96b3e9726a3459e3ecca013fb99a929be5f",
+      "882a021074405f63570f226cf24e0845e6d08d4d",
+      "c7fa48244fc3b609dff7afb6c58f6b6f4842a739",
+      "35986c479971bc440235a5fedf87123bf3f3b13b",
+      "738c4e5a8d5fc1daf09c9c5ca07c6a7d900afbc3",
+      "92b155bedc40fb55f4dc92b2cebc09ed0c6ba413",
+      "b7ace19d787ff647a5e42a00aa8473bed163a96d",
+      "637b5373b73573761739a23af1037c1adb50d1c0",
+      "69a80930539dce1c4be1da365309cade2f3f8481",
+      "9f31988f9d7966306edd546067d17c0fdf1fb466",
+      "023d51ef8e2fcd600e5b0ea90efe7be0401790b1",
+      "31a06e2065ecc0a9389d43c2220028a029a6d262",
+      "2c70ef98fa4d3ec1ca0be78997100c41b7c3cc1a",
+      "6eeda31ea410c83dfc6872dc4bc38097af6e5cbe",
+      "0dc2ad9e8300178ef0b501e31e1decc4347cba06",
+      "6b9527deb34df5c7eda1270a26c53bc2ea9e18fa",
+      "38c400eec7690ecee03cb9eea6c98e90bcd3eab2",
+      "14caa8fc2c5be652e7a9d74b939940c18a9eccc5",
+      "86cca5951dce401989fdd416c8b6bba5ec15daa1",
+      "6e191a3bd1708e66acf8bae54463c66ba84cbd74",
+      "ae9322eb10247b27c8801361f1cdd291614562b6",
+      "7f0123599782545e90ae2b22046a2f026ebc9638",
+      "7c59b412f7ddb2c028b3db06f308faf4d1de63aa",
+      "ab7651a5065aebf8f2ebea916908a1ea97736077",
+      "0a0e036680eeff366025321812f70724da8b8657",
+      "34c1917f50ceba02dee4057fd25f9f1cbe5163cf",
+      "318fb0641039511a1ed257c67379d22ca0043001",
+      "0609cfc9c4798562f4142a8edc12d20c093c9c63",
+      "98a732f9160b0e7815f30c7650bfe7e6269fc804",
+      "cafab5194dd935d61b2f888979dbc1d283eb382a",
+      "a33a1f07e663efd01fe4df1be3fb51e55bd69a8c",
+      "ed14ed4f18344ca5c32393208cde907bbcc5ab8a",
+      "c67ae19be0558a78ffe0cca7771d478602e51261",
+      "a47e49f5c196ea5ecac649681b76f2d60351d93d",
+      "c0f76dd9e2c8c9efb584ccb16df44a242309fdf7",
+      "206bdc4cb0ff3b801188502917596d6089b66315",
+      "6209fec66a67429280b217e34d488433c7d0db52",
+      "4618b1d7fe48cdd7b76acb374200b5f559950925",
+      "43483177f156c3750e5fa06b1053ac4aebb5db6a",
+      "10029bc0258219ba4d982dea0c571139d27b009c",
+      "30ccd15ceccbc3927dd45eecae8f79e5ed54ee44",
+      "d35db8e50f474a8b4a2c9d008b70ef3c88a5db24",
+      "66ef2c53aa5f7af5a1fae6f2c8eaf1f61e7d303d",
+      "2762550b56137d46edf66409188ee9ea9ccddf81",
+      "3608ffa8695f782751902f352ce1024f8c5c61f0",
+      "493bb78a9c1ff435e8812727546499df3f6d1442",
+      "2196c9f2e5129e556a6737ba4bf3204ea4525fd8",
+      "869183807fb9e34bef8815a1962a539fe1600d0c",
+      "7a4a45235b1a8d8a740b1803be94358c68232b84",
+      "425ddaf9eb62fa5b0d590e91e97489d1ae5ec1dd",
+      "bc22870ad685f01c6d57f25804bf1b38a1b306c8",
+      "1c26fbd85d7a8b279b816c9c742fc547c8a3e3dc",
+      "b81d5dd8d42a669cbe34cddd3cb20063e2c4e548",
+      "584d6b0379def4ffca4bd8659b56254f25fe9e93",
+      "13ac6b8457aed6f4a5efd87a5630e0f146f73697",
+      "375d90d1ad230e220a87a7c6c78b2843e8960cce",
+      "6659e309ba76d2f41ae73fe11e6c97ee64d67d79",
+      "1705b6637d159c231ec22ad882c2ebcc8bb04076",
+      "248ea73e8982ff5393307acfae22130bb7410814",
+      "b780eb36b451bbe65a3f71d65311350598ac363b",
+      "a87d73d7e9dd73970f3b2c5344492fd7a7eadd65",
+      "b33aa0578f178de680d852855d1101358a709727",
+      "bfdce592054b77b254a56106ae014f3d2f9a0604",
+      "0389b65f31955070df63ae563f08a3a058ab38b6",
+      "6cab0659f6fde1313b0d124f31c66a7e06814fd3",
+      "a6bee1055117848bdb75481cda6100c2d8e042ea",
+      "6e33258de9af87df416b0b0c309742e1f396c404",
+      "aaea3a9ffe54e95f764e2329740b1155d6c38d2d",
+      "823c5c4e52b9c522620b194ca334b2cfa8718e36",
+      "c95fbbca44c5dea7daa3485df23dc8d031271c47",
+      "33428b857d30bc5f8534d60acc1a04745569999f",
+      "8e329953ddc15872bd8e7da75c22edd32f861cf0",
+      "1c4aabd24220239eacd62b211bd6699108ee1f79",
+      "f5b695d4b036240da3b8f3562ff0e38f6b658771",
+      "aa01b7cc8344ee5d8b3d2745d1750b6774bc3f70",
+      "ec60c27c34359b71053fa0476c88be596544e9c9",
+      "2ed4e265a974153548969ac0bda751572d58b28e",
+      "2ae63525a6acb3ba6a52f9069054febde02ac0b0",
+      "aa3a3c592249a41533af5eed9f94fbe840e63650",
+      "f2148bff3e5a0ff918a13ba32de974037276d971",
+      "c6fec04a44a519efe84a94b45031f975f5fae439",
+      "3ef457c422e02e691fdf49fbe41da6faaa523239",
+      "15350472c670f4a497324741939bfa1917e0b98c",
+      "9866b6e409dfabd13750e9ed4eb870009f021207",
+      "75f10a02430f87a9b68747c80e891d7803bd0550",
+      "bfc8663028254f9e3be1156546ea1ab09971ac69",
+      "ffbb9edbb45782ba4aaa28a4b001b4c58751b745",
+      "4401a6ad11a9684f93ac4c0a27fbe8122bc4a6fd",
+      "8580972e9d828950fd78741611f28d72a98e1d65",
+      "215b238fd821a8008ac16feb2314594a54207438",
+      "0a1ae4d6a4e11dae7f7a3475dadce16d1ffc5d37",
+      "c6bbf2776960e74d5b783a363c89f8f2d711234a",
+      "4c28154862cdfc676819d923b39a15a76ba7e19a",
+      "9d6c5af35c12af6568d5915eb13d15a4bb1b262d",
+      "7907f768f8e66db63eff35ff27c9389594ab8d9b",
+      "08599f65412a4872954e12d7f59b0448bcb4b72b",
+      "26a96a5922a0bd627b742f21217d14bec5905c61",
+      "fe6a52da031ceceacc4989146d38a706e288e33a",
+      "49fd14a352d10ec98ca5791697ad57abe8e35292",
+      "bc651898d1d08874b1058a2b27b72ffaf11efa07",
+      "1fa90301d0f79e9c2b01fbecf44c2898998a8894",
+      "32cd31c1dbac6ee41de6be42c7a333a241a8d977",
+      "e03933433276bf763314cc9340898a3c8e99a93a",
+      "2647eaaf98474f8717c373fb2feddf7bc6821aff",
+      "6d7c31bca39dab84b1d888e0c9b4ebc6e3b5be61",
+      "284be0c3c6aa21f81d485b18017ba632f5a468a0",
+      "02c175218ba503091d2af75c7518828365a0ba77",
+      "c5c4f9acddb508a0ad465a4105c168a737829323",
+      "c8a02d0b7bae7b6dc318760eb03adb8b34e0e4a5",
+      "3ce31b70eba8670e63bdaad4a108f3ae92f51e7b",
+      "f0212e9b57deff129d942824b6142146b39b8ead",
+      "eac835022a17a22fe3f9e45700bac890e572ca19",
+      "baaba0272cef9cc42f4d9ea090dd7218dde790db",
+      "9ceb33fa17272c46ea4abedbebb7f18543134366",
+      "28052b5add4afdbce82cb21ada415a788056c667",
+      "c6edf7dc6eff1c460e6439debbb4f67e0cc49ebd",
+      "308e053edad28624324b14e31f65a6c64094f9d4",
+      "5e6a783e20afbb6c792bbc12f479584fa259765a",
+      "fbc1701524e305387fdccea49d8b2cef96b3e7ee",
+      "42b7afbaa2b67e5db26b40844e89ee4e5df21ba6",
+      "0cd5d3453c301bf0a75fed65692fa8c07ea8f220",
+      "608dc26b26b0397bd402d944357c2db26e66527f",
+      "4f579583eb242eded119613daeb55cb876aa08ff",
+      "1225911d71cb5fd4586c1202a6fed85d150fd496",
+      "005cb552ba9af906879734f51de791af4b30cfda",
+      "d7bd7cb84303f22fab4c74e3531622b4559f5733",
+      "be10c600e4ed0fa11164f884090525eae52c3eb7",
+      "ab440dd1239ecf72c37a2abed24355e8b160407e",
+      "0d24aa228736ff25c7a4d1382850cf7d7f0eb004",
+      "fd77e8dd72039f8d8c77687daac4e9df628d3c48",
+      "21a51579be3aaa3dcac4a495168dabdedbafe01f",
+      "202054de59d66c09fae306aab91d4ca20143ad51",
+      "af3454b9af243125895130615adf94f5e7522afb",
+      "0e8ca955113679d678b88070c130a65ae30d4b8b",
+      "1149c4dbc58c1c736cc0c9343c1222dc8f4dc083",
+      "4417b339f27159640ab54657289d519fb627760e",
+      "d70ffb1be80f82d4d4736abe9356dcb1d1906e26",
+      "f3740ccaf1b9b2eb4a9bf3b6f5eb510d6c4151f5",
+      "7dd8a2c874cf849aa01d8b8b41dd9681b0d946c7",
+      "53065c99b58ecd0b5ec849c17a6a8f3d9d2d8ff7",
+      "3c6e52616f7a6cb4b9eec119b6d794739a6a8dee",
+      "8d0a5ff57bd2f171dae0a39f3eba8b765e05a1ff",
+      "a9541dc285fc871d735ca7827cf55fa5d91e2bc6",
+      "242ad77eb3451008e0fbe5f8657d9e5718df1a10",
+      "d34b926dbd986cd47a4bba7f279a40c65bd38d9e",
+      "cbcde8988a5b1adb94a434f29eb5717d16a58c25",
+      "c3b95eee0ac9b8be0f172780fdc3cec5664a6cfd",
+      "92d7f2c2dc5cd723dbf2691a23c846f176594721"
+    ]
+  },
+  "clients": [
+    {
+      "client_id": "774f1f5f1abf673c5152de73939b172e3de14cdb",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "0d60c3fa8060bb9aa43a8caf99445ed896e5774e",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "f8a44e670fa2b0eb60919eba49dff3ca1b21b1b9",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "3bc85a9eff6de002000c3cb843f91fe525266105",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "8769342e5aeeca34f4715b92dcf7890089e64c4b",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "8db28818e091dcc1de29f264d8026539ed373ee4",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "65b45cd05f209b6b68a8b59581486c44e203ff58",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "c324460cd28e2dbc85bd7581a28b72a4b1e5688f",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "090351ad93de015de30885ff444f7a9791473905",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "4bb9e6968ebcb550c3cb342e3fdc0af82aaffda3",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "3777c85668d04c14d242ecac407bb8cbe2223a7e",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "48545b55855223b03bd254090fb9f823321e7024",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "2f9145aa04d21b7a783b4af3ef9a4a2182180957",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "b82ef32699d9ade320c682ee23545d5d7a8f5742",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "317fd91e14acca370c590389a268169cb062a209",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "c1e43942f4b351287eb982817e563467f73448f1",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "3bbdbb55e2310c71bf40c3d37ef4dc35a3e40ad4",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "6281890e82da2be2820cf094ad9d85abde1834bf",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "3f66f58eff47e1443288eac89ae16a3c0ba06fc8",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "57294e373b185715f611b1c799d1886d38f9ff97",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "450aa35f5581f29d76122b26dbb2e491d1cc8b39",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "092c35d072b015b30211885385a12c624ef751c9",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "33c5828300dbbd60aad84161cb81823a3eb6fcdd",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "de458c6399d72b810637a1a5555d85cbff7e7445",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "d9bd1c8b5e565b309a7a61f5e971322047b7c816",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "0ab530c35c0a051aed19bd08d3a3762d2b2a7fb3",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "3c991332a5a191d0e1229b3458de9c7ae8b89f16",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "d1db631936cabed458f7300867e8288de043b659",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "b09cfd1f3b68942e51fd31932f94bcd3d39fbce5",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "310887577430ae54cb13404924475b8df8cd3c48",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "24197dcbf33cdef4d34dd7574d0e3e0a1e44fdb3",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "4a664dce9a9a30c66919389e4f8eecce3db295d3",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "80adaabb22f9511bea08bca03dee56e22106adb7",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "00b415f145e673ee4252bc81a3261574540292ec",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "9b7de210315ddfb428703a5b7388a02704eeb340",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "1ea1e87b6db055dfed7317a1bdbd638e11a64acb",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "0f027f52c6a330b4e4072de522a4da07230bd9fd",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "0c064bfe547f60ba681ab8010a2288c10f2c1608",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "313c9cde06c3d88279007d481d750a3e35eaf9b0",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "f8a0991ea6ebc1cf1227397ead1a6971dca14fbd",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "474b4e7e04680688bb46cb01dca30c2e5f788f7e",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "1c66d2b6455441c137e5ba40d1516a46a51cc5de",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "0e1538e06dac6daedd12ee5b86281d49c5b945a9",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "457bc1dac3a641d8a4583ca24b5da73a1ecc0520",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "e49bec5b2004756433f112d10f9235d3e1c343e0",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "7cd9012c916df1beea79091e0482c500adf0e3e1",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "83f9d2f8ed423ec8c352247f6bfb0d65cb0f8ed9",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "1183a1197de598c6a34fbfc9189f10673bf344f8",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "3d952aa6b633893a15e761723eae4bae55d627ff",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "da55d462b4a79853494558cdebd8c9363a96a5a8",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "be34b8d31c20b8af64d9919cf231b1955efd610d",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "64e692445f919f48abb3de8ce89a2429bfcd37d6",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "5576b96b3e9726a3459e3ecca013fb99a929be5f",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "882a021074405f63570f226cf24e0845e6d08d4d",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "c7fa48244fc3b609dff7afb6c58f6b6f4842a739",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "35986c479971bc440235a5fedf87123bf3f3b13b",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "738c4e5a8d5fc1daf09c9c5ca07c6a7d900afbc3",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "92b155bedc40fb55f4dc92b2cebc09ed0c6ba413",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "b7ace19d787ff647a5e42a00aa8473bed163a96d",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "637b5373b73573761739a23af1037c1adb50d1c0",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "69a80930539dce1c4be1da365309cade2f3f8481",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "9f31988f9d7966306edd546067d17c0fdf1fb466",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "023d51ef8e2fcd600e5b0ea90efe7be0401790b1",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "31a06e2065ecc0a9389d43c2220028a029a6d262",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "2c70ef98fa4d3ec1ca0be78997100c41b7c3cc1a",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "6eeda31ea410c83dfc6872dc4bc38097af6e5cbe",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "0dc2ad9e8300178ef0b501e31e1decc4347cba06",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "6b9527deb34df5c7eda1270a26c53bc2ea9e18fa",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "38c400eec7690ecee03cb9eea6c98e90bcd3eab2",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "14caa8fc2c5be652e7a9d74b939940c18a9eccc5",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "86cca5951dce401989fdd416c8b6bba5ec15daa1",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "6e191a3bd1708e66acf8bae54463c66ba84cbd74",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "ae9322eb10247b27c8801361f1cdd291614562b6",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "7f0123599782545e90ae2b22046a2f026ebc9638",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "7c59b412f7ddb2c028b3db06f308faf4d1de63aa",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "ab7651a5065aebf8f2ebea916908a1ea97736077",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "0a0e036680eeff366025321812f70724da8b8657",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "34c1917f50ceba02dee4057fd25f9f1cbe5163cf",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "318fb0641039511a1ed257c67379d22ca0043001",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "0609cfc9c4798562f4142a8edc12d20c093c9c63",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "98a732f9160b0e7815f30c7650bfe7e6269fc804",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "cafab5194dd935d61b2f888979dbc1d283eb382a",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "a33a1f07e663efd01fe4df1be3fb51e55bd69a8c",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "ed14ed4f18344ca5c32393208cde907bbcc5ab8a",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "c67ae19be0558a78ffe0cca7771d478602e51261",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "a47e49f5c196ea5ecac649681b76f2d60351d93d",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "c0f76dd9e2c8c9efb584ccb16df44a242309fdf7",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "206bdc4cb0ff3b801188502917596d6089b66315",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "6209fec66a67429280b217e34d488433c7d0db52",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "4618b1d7fe48cdd7b76acb374200b5f559950925",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "43483177f156c3750e5fa06b1053ac4aebb5db6a",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "10029bc0258219ba4d982dea0c571139d27b009c",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "30ccd15ceccbc3927dd45eecae8f79e5ed54ee44",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "d35db8e50f474a8b4a2c9d008b70ef3c88a5db24",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "66ef2c53aa5f7af5a1fae6f2c8eaf1f61e7d303d",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "2762550b56137d46edf66409188ee9ea9ccddf81",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "3608ffa8695f782751902f352ce1024f8c5c61f0",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "493bb78a9c1ff435e8812727546499df3f6d1442",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "2196c9f2e5129e556a6737ba4bf3204ea4525fd8",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "869183807fb9e34bef8815a1962a539fe1600d0c",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "7a4a45235b1a8d8a740b1803be94358c68232b84",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "425ddaf9eb62fa5b0d590e91e97489d1ae5ec1dd",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "bc22870ad685f01c6d57f25804bf1b38a1b306c8",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "1c26fbd85d7a8b279b816c9c742fc547c8a3e3dc",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "b81d5dd8d42a669cbe34cddd3cb20063e2c4e548",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "584d6b0379def4ffca4bd8659b56254f25fe9e93",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "13ac6b8457aed6f4a5efd87a5630e0f146f73697",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "375d90d1ad230e220a87a7c6c78b2843e8960cce",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "6659e309ba76d2f41ae73fe11e6c97ee64d67d79",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "1705b6637d159c231ec22ad882c2ebcc8bb04076",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "248ea73e8982ff5393307acfae22130bb7410814",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "b780eb36b451bbe65a3f71d65311350598ac363b",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "a87d73d7e9dd73970f3b2c5344492fd7a7eadd65",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "b33aa0578f178de680d852855d1101358a709727",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "bfdce592054b77b254a56106ae014f3d2f9a0604",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "0389b65f31955070df63ae563f08a3a058ab38b6",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "6cab0659f6fde1313b0d124f31c66a7e06814fd3",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "a6bee1055117848bdb75481cda6100c2d8e042ea",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "6e33258de9af87df416b0b0c309742e1f396c404",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "aaea3a9ffe54e95f764e2329740b1155d6c38d2d",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "823c5c4e52b9c522620b194ca334b2cfa8718e36",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "c95fbbca44c5dea7daa3485df23dc8d031271c47",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "33428b857d30bc5f8534d60acc1a04745569999f",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "8e329953ddc15872bd8e7da75c22edd32f861cf0",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "1c4aabd24220239eacd62b211bd6699108ee1f79",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "f5b695d4b036240da3b8f3562ff0e38f6b658771",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "aa01b7cc8344ee5d8b3d2745d1750b6774bc3f70",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "ec60c27c34359b71053fa0476c88be596544e9c9",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "2ed4e265a974153548969ac0bda751572d58b28e",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "2ae63525a6acb3ba6a52f9069054febde02ac0b0",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "aa3a3c592249a41533af5eed9f94fbe840e63650",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "f2148bff3e5a0ff918a13ba32de974037276d971",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "c6fec04a44a519efe84a94b45031f975f5fae439",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "3ef457c422e02e691fdf49fbe41da6faaa523239",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "15350472c670f4a497324741939bfa1917e0b98c",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "9866b6e409dfabd13750e9ed4eb870009f021207",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "75f10a02430f87a9b68747c80e891d7803bd0550",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "bfc8663028254f9e3be1156546ea1ab09971ac69",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "ffbb9edbb45782ba4aaa28a4b001b4c58751b745",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "4401a6ad11a9684f93ac4c0a27fbe8122bc4a6fd",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "8580972e9d828950fd78741611f28d72a98e1d65",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "215b238fd821a8008ac16feb2314594a54207438",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "0a1ae4d6a4e11dae7f7a3475dadce16d1ffc5d37",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "c6bbf2776960e74d5b783a363c89f8f2d711234a",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "4c28154862cdfc676819d923b39a15a76ba7e19a",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "9d6c5af35c12af6568d5915eb13d15a4bb1b262d",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "7907f768f8e66db63eff35ff27c9389594ab8d9b",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "08599f65412a4872954e12d7f59b0448bcb4b72b",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "26a96a5922a0bd627b742f21217d14bec5905c61",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "fe6a52da031ceceacc4989146d38a706e288e33a",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "49fd14a352d10ec98ca5791697ad57abe8e35292",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "bc651898d1d08874b1058a2b27b72ffaf11efa07",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "1fa90301d0f79e9c2b01fbecf44c2898998a8894",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "32cd31c1dbac6ee41de6be42c7a333a241a8d977",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "e03933433276bf763314cc9340898a3c8e99a93a",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "2647eaaf98474f8717c373fb2feddf7bc6821aff",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "6d7c31bca39dab84b1d888e0c9b4ebc6e3b5be61",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "284be0c3c6aa21f81d485b18017ba632f5a468a0",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "02c175218ba503091d2af75c7518828365a0ba77",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "c5c4f9acddb508a0ad465a4105c168a737829323",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "c8a02d0b7bae7b6dc318760eb03adb8b34e0e4a5",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "3ce31b70eba8670e63bdaad4a108f3ae92f51e7b",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "f0212e9b57deff129d942824b6142146b39b8ead",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "eac835022a17a22fe3f9e45700bac890e572ca19",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "baaba0272cef9cc42f4d9ea090dd7218dde790db",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "9ceb33fa17272c46ea4abedbebb7f18543134366",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "28052b5add4afdbce82cb21ada415a788056c667",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "c6edf7dc6eff1c460e6439debbb4f67e0cc49ebd",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "308e053edad28624324b14e31f65a6c64094f9d4",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "5e6a783e20afbb6c792bbc12f479584fa259765a",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "fbc1701524e305387fdccea49d8b2cef96b3e7ee",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "42b7afbaa2b67e5db26b40844e89ee4e5df21ba6",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "0cd5d3453c301bf0a75fed65692fa8c07ea8f220",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "608dc26b26b0397bd402d944357c2db26e66527f",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "4f579583eb242eded119613daeb55cb876aa08ff",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "1225911d71cb5fd4586c1202a6fed85d150fd496",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "005cb552ba9af906879734f51de791af4b30cfda",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "d7bd7cb84303f22fab4c74e3531622b4559f5733",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "be10c600e4ed0fa11164f884090525eae52c3eb7",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "ab440dd1239ecf72c37a2abed24355e8b160407e",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "0d24aa228736ff25c7a4d1382850cf7d7f0eb004",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "fd77e8dd72039f8d8c77687daac4e9df628d3c48",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "21a51579be3aaa3dcac4a495168dabdedbafe01f",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "202054de59d66c09fae306aab91d4ca20143ad51",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "af3454b9af243125895130615adf94f5e7522afb",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "0e8ca955113679d678b88070c130a65ae30d4b8b",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "1149c4dbc58c1c736cc0c9343c1222dc8f4dc083",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "4417b339f27159640ab54657289d519fb627760e",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "d70ffb1be80f82d4d4736abe9356dcb1d1906e26",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "f3740ccaf1b9b2eb4a9bf3b6f5eb510d6c4151f5",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "7dd8a2c874cf849aa01d8b8b41dd9681b0d946c7",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "53065c99b58ecd0b5ec849c17a6a8f3d9d2d8ff7",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "3c6e52616f7a6cb4b9eec119b6d794739a6a8dee",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "8d0a5ff57bd2f171dae0a39f3eba8b765e05a1ff",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "a9541dc285fc871d735ca7827cf55fa5d91e2bc6",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "242ad77eb3451008e0fbe5f8657d9e5718df1a10",
+      "gateway_id": "G3",
+      "sender": true
+    },
+    {
+      "client_id": "d34b926dbd986cd47a4bba7f279a40c65bd38d9e",
+      "gateway_id": "G0",
+      "sender": true
+    },
+    {
+      "client_id": "cbcde8988a5b1adb94a434f29eb5717d16a58c25",
+      "gateway_id": "G1",
+      "sender": true
+    },
+    {
+      "client_id": "c3b95eee0ac9b8be0f172780fdc3cec5664a6cfd",
+      "gateway_id": "G2",
+      "sender": true
+    },
+    {
+      "client_id": "92d7f2c2dc5cd723dbf2691a23c846f176594721",
+      "gateway_id": "G3",
+      "sender": true
+    }
+  ]
+}

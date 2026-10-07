@@ -5,7 +5,11 @@
 package main
 
 import (
-	"bytes"
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -29,8 +33,9 @@ const (
 )
 
 var (
-	newline = []byte{'\n'}
-	space   = []byte{' '}
+	benchmark = flag.Bool("benchmark", false, "preserve JSON message boundaries for workload replay")
+	newline   = []byte{'\n'}
+	space     = []byte{' '}
 )
 
 var upgrader = websocket.Upgrader{
@@ -60,7 +65,11 @@ func (c *Client) readPump() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
+	if *benchmark {
+		c.conn.SetReadLimit(1024 * 1024)
+	} else {
+		c.conn.SetReadLimit(maxMessageSize)
+	}
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
@@ -71,10 +80,35 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		message = append([]byte(c.name+": "), message...)
+		message, err = clientMessage(message, c.name, c.hub.gatewayID, *benchmark)
+		if err != nil {
+			log.Printf("invalid client message: %v", err)
+			break
+		}
 		c.hub.broadcast <- message
 	}
+}
+
+// Routing metadata is stamped at ingress, never trusted from a client.
+func clientMessage(raw []byte, sender, gateway string, structured bool) ([]byte, error) {
+	var msg Message
+	if structured {
+		if err := json.Unmarshal(raw, &msg); err != nil {
+			return nil, err
+		}
+		if msg.MessageID == "" || msg.RunID == "" || msg.SenderID != sender {
+			return nil, fmt.Errorf("run_id/message_id required and sender_id must match connection name")
+		}
+	} else {
+		var id [16]byte
+		if _, err := rand.Read(id[:]); err != nil {
+			return nil, err
+		}
+		msg = Message{MessageID: hex.EncodeToString(id[:]), SenderID: sender, Payload: string(raw), Timestamp: time.Now().UnixMilli()}
+	}
+	msg.SourceGateway = gateway
+	msg.FromGateway = ""
+	return json.Marshal(msg)
 }
 
 // writePump pumps messages from the hub to the websocket connection.
@@ -106,6 +140,9 @@ func (c *Client) writePump() {
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
+			if *benchmark {
+				n = 0
+			}
 			for i := 0; i < n; i++ {
 				w.Write(newline)
 				w.Write(<-c.send)
