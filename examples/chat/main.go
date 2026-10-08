@@ -20,6 +20,7 @@ var addr = flag.String("addr", ":8080", "http service address")
 var gatewayID = flag.String("id", "G0", "gateway ID")
 var topology = flag.String("topology", "star", "topology type")
 var peers = flag.String("peers", "", "comma-separated peer ws URLs")
+var directPeers = flag.String("direct-peers", "", "Direct JSON mapping G0-G3 to /inter-gw URLs")
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -36,6 +37,19 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+	var directConfig map[string]string
+	if *topology == "direct" {
+		if *peers != "" {
+			log.Fatal("Direct uses -direct-peers, not -peers")
+		}
+		var err error
+		directConfig, err = loadDirectConfig(*directPeers, *gatewayID)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if *directPeers != "" {
+		log.Fatal("-direct-peers requires -topology direct")
+	}
 	if *topology == "star" {
 		if err := validateStarConfig(*gatewayID, *peers); err != nil {
 			log.Fatal(err)
@@ -45,6 +59,9 @@ func main() {
 	// 傳入 ID 與 topology 初始化 hub
 	hub := newHub(*gatewayID, *topology)
 	go hub.run()
+	if directConfig != nil {
+		startDirectPeers(hub, directConfig)
+	}
 
 	// 若有指定的 peers 則建立跨 Gateway 連線
 	if *peers != "" {
@@ -72,15 +89,29 @@ func chatHandler(hub *Hub) http.Handler {
 		hub.peerLock.RLock()
 		defer hub.peerLock.RUnlock()
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]any{"gateway_id": hub.gatewayID, "connected_peers": len(hub.peerGateway)})
+		ids, ready := peerStatus(hub)
+		json.NewEncoder(w).Encode(map[string]any{"gateway_id": hub.gatewayID, "topology": hub.topology, "peer_ids": ids, "ready": ready, "connected_peers": len(hub.peerGateway), "metrics": hub.metricsSnapshot()})
 	})
 	mux.HandleFunc("/", serveHome)
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		if isDirect(hub) {
+			hub.peerLock.RLock()
+			_, ready := peerStatus(hub)
+			hub.peerLock.RUnlock()
+			if !ready {
+				http.Error(w, "Direct peers not ready", http.StatusServiceUnavailable)
+				return
+			}
+		}
 		serveWs(hub, w, r)
 	})
 
 	mux.HandleFunc("/inter-gw", func(w http.ResponseWriter, r *http.Request) {
 		from := r.URL.Query().Get("from")
+		if isDirect(hub) && (!validGatewayID(from) || !validGatewayID(hub.gatewayID) || from >= hub.gatewayID || r.URL.Query().Get("to") != hub.gatewayID || r.URL.Query().Get("topology") != "direct") {
+			http.Error(w, "Direct requires lower-ID peer dialing the declared higher-ID destination", http.StatusForbidden)
+			return
+		}
 		if isStar(hub) && (hub.gatewayID != "G0" || !starLeaf(from)) {
 			http.Error(w, "Star permits only leaf-initiated connections to G0", http.StatusForbidden)
 			return
@@ -92,7 +123,7 @@ func chatHandler(hub *Hub) http.Handler {
 			http.Error(w, "peer already connected", http.StatusConflict)
 			return
 		}
-		conn, err := upgrader.Upgrade(w, r, http.Header{"X-Gateway-Id": []string{hub.gatewayID}})
+		conn, err := upgrader.Upgrade(w, r, http.Header{"X-Gateway-Id": []string{hub.gatewayID}, "X-Topology": []string{hub.topology}})
 		if err != nil {
 			return
 		}
@@ -104,6 +135,15 @@ func chatHandler(hub *Hub) http.Handler {
 }
 
 func readPeerMessages(hub *Hub, conn *websocket.Conn) {
+	peerID := ""
+	hub.peerLock.RLock()
+	for id, c := range hub.peerGateway {
+		if c == conn {
+			peerID = id
+			break
+		}
+	}
+	hub.peerLock.RUnlock()
 	defer func() {
 		conn.Close()
 		hub.peerLock.Lock()
@@ -120,6 +160,14 @@ func readPeerMessages(hub *Hub, conn *websocket.Conn) {
 		if err != nil {
 			return
 		}
+		if isDirect(hub) {
+			var msg Message
+			if json.Unmarshal(message, &msg) != nil || msg.MessageID == "" || msg.SenderID == "" || msg.SourceGateway != peerID || msg.FromGateway != peerID {
+				hub.rejectedPeerMessages.Add(1)
+				return
+			}
+		}
+		hub.overlayReceived.Add(1)
 		hub.broadcast <- message
 	}
 }

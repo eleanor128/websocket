@@ -34,8 +34,6 @@ const (
 
 var (
 	benchmark = flag.Bool("benchmark", false, "preserve JSON message boundaries for workload replay")
-	newline   = []byte{'\n'}
-	space     = []byte{' '}
 )
 
 var upgrader = websocket.Upgrader{
@@ -138,15 +136,8 @@ func (c *Client) writePump() {
 			}
 			w.Write(message)
 
-			// Add queued chat messages to the current websocket message.
-			n := len(c.send)
-			if *benchmark {
-				n = 0
-			}
-			for i := 0; i < n; i++ {
-				w.Write(newline)
-				w.Write(<-c.send)
-			}
+			// Every mode now emits JSON envelopes. Preserve one envelope per
+			// WebSocket message, including concurrent browser publications.
 
 			if err := w.Close(); err != nil {
 				return

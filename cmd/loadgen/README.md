@@ -18,6 +18,17 @@ Replace localhost with the existing server's reachable address. Deploy the updat
 
 ## Four-gateway mode
 
+### Direct implementation
+
+Direct now has a real six-connection full mesh, with exact peer readiness and per-peer business-message counters. See `examples/chat/DIRECT.md` for deployment and browser demo commands. A client endpoint file (`/ws`) is distinct from the server overlay configuration (`/inter-gw`). The generator's existing JSON protocol and traces work unchanged.
+
+```powershell
+python cmd/loadgen/test_direct.py --output results/direct-check-01
+python cmd/loadgen/test_direct.py --all --output results/direct-matrix-01
+```
+
+The second command tests all five pilot rates, restarting four processes for each rate. It verifies not only delivery but exactly three overlay writes per original publication, one to each peer, and no remote forwarding. See each run's `health-after.json` and `verification.json` for topology evidence.
+
 ### Existing Star implementation
 
 Use the updated `examples/chat` code on all four gateways. Start G0 first, then its three leaves, all with `-benchmark`. From the repository root, in four separate terminals:
