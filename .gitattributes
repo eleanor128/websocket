@@ -1,0 +1,2 @@
+# Workload bundles are byte-hashed; preserve generator LF output on Windows.
+/workloads/** text eol=lf
