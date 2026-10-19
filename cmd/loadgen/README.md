@@ -18,9 +18,20 @@ Replace localhost with the existing server's reachable address. Deploy the updat
 
 ## Four-gateway mode
 
+### Tree implementation
+
+Tree forms a broadcast tree with three bidirectional connections: G0-G1, G0-G2, and G1-G3. See `examples/chat/TREE.md` for full design and browser demo commands.
+
+```powershell
+python cmd/loadgen/test_tree.py --output results/tree-check-01
+python cmd/loadgen/test_tree.py --all --output results/tree-matrix-01
+```
+
+The second command tests all five pilot rates. It verifies 100% on-time delivery with zero missing or duplicate messages, exactly 3 overlay transmissions across the cluster per publication, and node metrics matching theoretical formulas.
+
 ### Direct implementation
 
-Direct now has a real six-connection full mesh, with exact peer readiness and per-peer business-message counters. See `examples/chat/DIRECT.md` for deployment and browser demo commands. A client endpoint file (`/ws`) is distinct from the server overlay configuration (`/inter-gw`). The generator's existing JSON protocol and traces work unchanged.
+Direct has a six-connection full mesh, with exact peer readiness and per-peer business-message counters. See `examples/chat/DIRECT.md` for deployment and browser demo commands. A client endpoint file (`/ws`) is distinct from the server overlay configuration (`/inter-gw`). The generator's existing JSON protocol and traces work unchanged.
 
 ```powershell
 python cmd/loadgen/test_direct.py --output results/direct-check-01

@@ -21,6 +21,7 @@ var gatewayID = flag.String("id", "G0", "gateway ID")
 var topology = flag.String("topology", "star", "topology type")
 var peers = flag.String("peers", "", "comma-separated peer ws URLs")
 var directPeers = flag.String("direct-peers", "", "Direct JSON mapping G0-G3 to /inter-gw URLs")
+var treePeers = flag.String("tree-peers", "", "Tree JSON mapping G0-G3 to /inter-gw URLs")
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -38,9 +39,10 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 	var directConfig map[string]string
+	var treeConfig map[string]string
 	if *topology == "direct" {
-		if *peers != "" {
-			log.Fatal("Direct uses -direct-peers, not -peers")
+		if *peers != "" || *treePeers != "" {
+			log.Fatal("Direct uses -direct-peers, not -peers or -tree-peers")
 		}
 		var err error
 		directConfig, err = loadDirectConfig(*directPeers, *gatewayID)
@@ -50,7 +52,22 @@ func main() {
 	} else if *directPeers != "" {
 		log.Fatal("-direct-peers requires -topology direct")
 	}
+	if *topology == "tree" {
+		if *peers != "" || *directPeers != "" {
+			log.Fatal("Tree uses -tree-peers, not -peers or -direct-peers")
+		}
+		var err error
+		treeConfig, err = loadTreeConfig(*treePeers, *gatewayID)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if *treePeers != "" {
+		log.Fatal("-tree-peers requires -topology tree")
+	}
 	if *topology == "star" {
+		if *directPeers != "" || *treePeers != "" {
+			log.Fatal("Star uses -peers (for leaves), not -direct-peers or -tree-peers")
+		}
 		if err := validateStarConfig(*gatewayID, *peers); err != nil {
 			log.Fatal(err)
 		}
@@ -61,6 +78,9 @@ func main() {
 	go hub.run()
 	if directConfig != nil {
 		startDirectPeers(hub, directConfig)
+	}
+	if treeConfig != nil {
+		startTreePeers(hub, treeConfig)
 	}
 
 	// 若有指定的 peers 則建立跨 Gateway 連線
@@ -94,12 +114,12 @@ func chatHandler(hub *Hub) http.Handler {
 	})
 	mux.HandleFunc("/", serveHome)
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		if isDirect(hub) {
+		if isDirect(hub) || isTree(hub) {
 			hub.peerLock.RLock()
 			_, ready := peerStatus(hub)
 			hub.peerLock.RUnlock()
 			if !ready {
-				http.Error(w, "Direct peers not ready", http.StatusServiceUnavailable)
+				http.Error(w, "peers not ready", http.StatusServiceUnavailable)
 				return
 			}
 		}
@@ -110,6 +130,10 @@ func chatHandler(hub *Hub) http.Handler {
 		from := r.URL.Query().Get("from")
 		if isDirect(hub) && (!validGatewayID(from) || !validGatewayID(hub.gatewayID) || from >= hub.gatewayID || r.URL.Query().Get("to") != hub.gatewayID || r.URL.Query().Get("topology") != "direct") {
 			http.Error(w, "Direct requires lower-ID peer dialing the declared higher-ID destination", http.StatusForbidden)
+			return
+		}
+		if isTree(hub) && (!validGatewayID(from) || !validGatewayID(hub.gatewayID) || !treeEdge(from, hub.gatewayID) || from >= hub.gatewayID || r.URL.Query().Get("to") != hub.gatewayID || r.URL.Query().Get("topology") != "tree") {
+			http.Error(w, "Tree requires lower-ID peer on tree edge dialing higher-ID destination", http.StatusForbidden)
 			return
 		}
 		if isStar(hub) && (hub.gatewayID != "G0" || !starLeaf(from)) {
@@ -163,6 +187,13 @@ func readPeerMessages(hub *Hub, conn *websocket.Conn) {
 		if isDirect(hub) {
 			var msg Message
 			if json.Unmarshal(message, &msg) != nil || msg.MessageID == "" || msg.SenderID == "" || msg.SourceGateway != peerID || msg.FromGateway != peerID {
+				hub.rejectedPeerMessages.Add(1)
+				return
+			}
+		}
+		if isTree(hub) {
+			var msg Message
+			if json.Unmarshal(message, &msg) != nil || msg.MessageID == "" || msg.SenderID == "" || !validGatewayID(msg.SourceGateway) || msg.FromGateway != peerID {
 				hub.rejectedPeerMessages.Add(1)
 				return
 			}
