@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -96,24 +97,59 @@ func connectTree(h *Hub, target, address string) error {
 
 // startTreePeers initiates connections to adjacent tree peers where this node has a lower ID.
 func startTreePeers(h *Hub, peers map[string]string) {
+	startTreePeersContext(context.Background(), h, peers)
+}
+
+func startTreePeersContext(ctx context.Context, h *Hub, peers map[string]string) {
 	for id, address := range peers {
 		if !treeEdge(h.gatewayID, id) || id <= h.gatewayID {
 			continue
 		}
-		go func(target, address string) {
-			deadline := time.Now().Add(30 * time.Second)
-			for {
-				err := connectTree(h, target, address)
-				if err == nil {
-					log.Printf("Tree connected %s <-> %s", h.gatewayID, target)
-					return
-				}
-				if time.Now().After(deadline) {
-					log.Printf("Tree peer %s unavailable: %v", target, err)
-					return
-				}
-				time.Sleep(200 * time.Millisecond)
+		go maintainTreePeer(ctx, h, id, address)
+	}
+}
+
+func maintainTreePeer(ctx context.Context, h *Hub, target, address string) {
+	retry := 200 * time.Millisecond
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		h.peerLock.RLock()
+		connected := h.peerGateway[target] != nil
+		h.peerLock.RUnlock()
+		if connected {
+			retry = 200 * time.Millisecond
+			if !waitTreeRetry(ctx, 100*time.Millisecond) {
+				return
 			}
-		}(id, address)
+			continue
+		}
+
+		if err := connectTree(h, target, address); err == nil {
+			log.Printf("Tree connected %s <-> %s", h.gatewayID, target)
+			retry = 200 * time.Millisecond
+		} else {
+			if !waitTreeRetry(ctx, retry) {
+				return
+			}
+			if retry < 2*time.Second {
+				retry *= 2
+			}
+		}
+	}
+}
+
+func waitTreeRetry(ctx context.Context, delay time.Duration) bool {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-timer.C:
+		return true
 	}
 }

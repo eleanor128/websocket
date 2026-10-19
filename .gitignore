@@ -28,3 +28,14 @@ _testmain.go
 /results/
 
 COMP631.pem
+comp631.pem
+
+# Local Python caches and agent planning records
+/cmd/loadgen/__pycache__/
+
+
+# docker files
+.dockerignore
+Dockerfile.gateway
+compose.star.yaml
+

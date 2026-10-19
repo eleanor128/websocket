@@ -55,6 +55,20 @@ def save(path, value):
 
 def run_one(args, output, server, loadgen, trace):
     output.mkdir()
+    server_gomaxprocs = getattr(args, "server_gomaxprocs", 0)
+    loadgen_gomaxprocs = getattr(args, "loadgen_gomaxprocs", 0)
+    server_env = os.environ.copy()
+    loadgen_env = os.environ.copy()
+    if server_gomaxprocs:
+        server_env["GOMAXPROCS"] = str(server_gomaxprocs)
+    if loadgen_gomaxprocs:
+        loadgen_env["GOMAXPROCS"] = str(loadgen_gomaxprocs)
+    save(output / "execution.json", {
+        "duration": args.duration,
+        "client_queue_capacity": args.client_queue,
+        "server_gomaxprocs": server_gomaxprocs or "inherited",
+        "loadgen_gomaxprocs": loadgen_gomaxprocs or "inherited",
+    })
     ports = []
     while len(ports) < 4:
         with socket.socket() as sock:
@@ -74,9 +88,10 @@ def run_one(args, output, server, loadgen, trace):
             logs.append(log)
             cmd = [
                 str(server), "-benchmark", "-topology", "tree", "-id", f"G{i}",
-                "-addr", f"127.0.0.1:{port}", "-tree-peers", str(output / "overlay.json")
+                "-addr", f"127.0.0.1:{port}", "-tree-peers", str(output / "overlay.json"),
+                "-client-queue", str(args.client_queue)
             ]
-            processes.append(subprocess.Popen(cmd, cwd=ROOT / "examples/chat", stdout=log, stderr=subprocess.STDOUT, creationflags=hidden))
+            processes.append(subprocess.Popen(cmd, cwd=ROOT / "examples/chat", stdout=log, stderr=subprocess.STDOUT, creationflags=hidden, env=server_env))
 
         before = wait_ready(processes, ports)
         save(output / "health-before.json", before)
@@ -84,13 +99,16 @@ def run_one(args, output, server, loadgen, trace):
 
         subprocess.run([
             str(loadgen), "-gateways", str(output / "gateways.json"), "-clients", str(args.clients),
-            "-trace", str(trace), "-duration", "60s", "-drain", "2s", "-output", str(output / "run")
-        ], cwd=ROOT, check=True)
+            "-trace", str(trace), "-duration", args.duration, "-drain", "2s", "-output", str(output / "run")
+        ], cwd=ROOT, check=True, env=loadgen_env)
 
         after = [health(p) for p in ports]
         save(output / "health-after.json", after)
         summary = json.loads((output / "run/summary.json").read_text())
         total = summary["scheduled_messages"]
+
+        if summary["unique_deliveries"] != summary["expected_deliveries"]:
+            raise RuntimeError("unique/expected delivery mismatch")
 
         for key in ("missing", "duplicates", "unexpected_messages", "failed_or_unsent", "disconnects"):
             if summary[key] != 0:
@@ -103,12 +121,21 @@ def run_one(args, output, server, loadgen, trace):
         # G2 sent: m2,     recv: M - m2
         # G3 sent: m3,     recv: M - m3
         total_overlay_sent = 0
+        m0, m1, m2, m3 = (summary["gateway_stats"][f"G{i}"]["scheduled_messages"] for i in range(4))
+        expected_edges = {
+            "G0": {"G1": m0 + m2, "G2": m0 + m1 + m3},
+            "G1": {"G0": m1 + m3, "G3": m0 + m1 + m2},
+            "G2": {"G0": m2}, "G3": {"G1": m3},
+        }
         for i, state in enumerate(after):
             gid = f"G{i}"
             expected_peers = EXPECTED_PEERS[gid]
             if not state["ready"] or state["peer_ids"] != expected_peers:
                 raise RuntimeError(f"{gid}: tree peer membership changed: {state['peer_ids']}")
             m = state["metrics"]
+            for peer in EXPECTED_PEERS:
+                if m["overlay_sent_by_peer"][peer] != expected_edges[gid].get(peer, 0):
+                    raise RuntimeError(f"incorrect directed edge count {gid}->{peer}")
             local = summary["gateway_stats"][gid]["scheduled_messages"]
 
             if m["local_publications"] != local:
@@ -136,6 +163,9 @@ def run_one(args, output, server, loadgen, trace):
             "overlay_connections": 3,
             "total_overlay_sent": total_overlay_sent,
             "expected_cluster_sent": 3 * total,
+            "expected_directed_edge_sends": expected_edges,
+            "on_time_target": 0.99,
+            "on_time_target_met": summary["on_time_fraction"] >= 0.99,
             "rule": "G0-G1, G0-G2, G1-G3 bidirectional tree; forwards along all non-incoming edges"
         })
         return {
@@ -145,6 +175,7 @@ def run_one(args, output, server, loadgen, trace):
             "p95_ms": summary["scheduled_latency_p95_ms"],
             "p99_ms": summary["scheduled_latency_p99_ms"],
             "on_time_fraction": summary["on_time_fraction"],
+            "on_time_target_met": summary["on_time_fraction"] >= 0.99,
             "passed": True
         }
     finally:
@@ -167,6 +198,10 @@ def main():
     p.add_argument("--all", action="store_true", help="run five pilot rates, sequential independent deployments")
     p.add_argument("--trace", type=Path, default=ROOT / "workloads/generated/pilot-v1/rate-10.jsonl")
     p.add_argument("--clients", type=Path, default=ROOT / "workloads/generated/pilot-v1/clients.json")
+    p.add_argument("--duration", default="60s", help="measurement duration matching the supplied trace")
+    p.add_argument("--client-queue", type=int, default=1024, help="bounded outbound queue per server-side client")
+    p.add_argument("--server-gomaxprocs", type=int, default=2, help="GOMAXPROCS per gateway; 0 inherits the environment")
+    p.add_argument("--loadgen-gomaxprocs", type=int, default=2, help="GOMAXPROCS for loadgen; 0 inherits the environment")
     args = p.parse_args()
     args.clients = args.clients.resolve()
     output = args.output.resolve()
@@ -186,6 +221,19 @@ def main():
                 result = run_one(args, output / trace.stem, server, loadgen, trace)
             except Exception as exc:
                 result = {"trace": trace.name, "passed": False, "error": str(exc)}
+                summary_path = output / trace.stem / "run/summary.json"
+                if summary_path.exists():
+                    summary = json.loads(summary_path.read_text())
+                    result.update({
+                        "messages": summary["scheduled_messages"],
+                        "unique_deliveries": summary["unique_deliveries"],
+                        "expected_deliveries": summary["expected_deliveries"],
+                        "missing": summary["missing"],
+                        "failed_or_unsent": summary["failed_or_unsent"],
+                        "disconnects": summary["disconnects"],
+                        "on_time_fraction": summary["on_time_fraction"],
+                        "on_time_target_met": summary["on_time_fraction"] >= 0.99,
+                    })
             results.append(result)
             save(output / "matrix.json", results)
             print(json.dumps(result), flush=True)

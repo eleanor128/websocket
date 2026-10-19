@@ -38,6 +38,9 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+	if *clientQueueCapacity < 1 {
+		log.Fatal("-client-queue must be at least 1")
+	}
 	var directConfig map[string]string
 	var treeConfig map[string]string
 	if *topology == "direct" {
@@ -110,7 +113,7 @@ func chatHandler(hub *Hub) http.Handler {
 		defer hub.peerLock.RUnlock()
 		w.Header().Set("Content-Type", "application/json")
 		ids, ready := peerStatus(hub)
-		json.NewEncoder(w).Encode(map[string]any{"gateway_id": hub.gatewayID, "topology": hub.topology, "peer_ids": ids, "ready": ready, "connected_peers": len(hub.peerGateway), "metrics": hub.metricsSnapshot()})
+		json.NewEncoder(w).Encode(map[string]any{"gateway_id": hub.gatewayID, "topology": hub.topology, "peer_ids": ids, "ready": ready, "connected_peers": len(hub.peerGateway), "client_queue_capacity": *clientQueueCapacity, "metrics": hub.metricsSnapshot()})
 	})
 	mux.HandleFunc("/", serveHome)
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
@@ -172,10 +175,8 @@ func readPeerMessages(hub *Hub, conn *websocket.Conn) {
 		conn.Close()
 		hub.peerLock.Lock()
 		defer hub.peerLock.Unlock()
-		for id, peer := range hub.peerGateway {
-			if peer == conn {
-				delete(hub.peerGateway, id)
-			}
+		if peerID != "" && hub.peerGateway[peerID] == conn {
+			delete(hub.peerGateway, peerID)
 		}
 	}()
 	conn.SetReadLimit(2 * 1024 * 1024)
@@ -193,7 +194,7 @@ func readPeerMessages(hub *Hub, conn *websocket.Conn) {
 		}
 		if isTree(hub) {
 			var msg Message
-			if json.Unmarshal(message, &msg) != nil || msg.MessageID == "" || msg.SenderID == "" || !validGatewayID(msg.SourceGateway) || msg.FromGateway != peerID {
+			if json.Unmarshal(message, &msg) != nil || msg.MessageID == "" || msg.SenderID == "" || msg.FromGateway != peerID || !validTreeIngress(hub.gatewayID, peerID, msg.SourceGateway) {
 				hub.rejectedPeerMessages.Add(1)
 				return
 			}

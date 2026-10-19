@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http/httptest"
@@ -91,6 +92,28 @@ func TestTreeRouting(t *testing.T) {
 	for _, target := range []string{"G0", "G1", "G2", "G3"} {
 		if g3Strategy.ShouldForward(target, Message{SourceGateway: "G2", FromGateway: "G1"}) {
 			t.Fatalf("G3 leaf should not forward to %s", target)
+		}
+	}
+}
+
+func TestTreeIngressPaths(t *testing.T) {
+	want := map[string]map[string]string{
+		"G0": {"G1": "G1", "G2": "G2", "G3": "G1"},
+		"G1": {"G0": "G0", "G2": "G0", "G3": "G3"},
+		"G2": {"G0": "G0", "G1": "G0", "G3": "G0"},
+		"G3": {"G0": "G1", "G1": "G1", "G2": "G1"},
+	}
+	for _, local := range []string{"G0", "G1", "G2", "G3"} {
+		for _, source := range []string{"G0", "G1", "G2", "G3"} {
+			got := treeNextHop(local, source)
+			if got != want[local][source] {
+				t.Fatalf("next hop from %s toward source %s: got %q, want %q", local, source, got, want[local][source])
+			}
+			for _, peer := range expectedTreePeers(local) {
+				if validTreeIngress(local, peer, source) != (peer == want[local][source]) {
+					t.Fatalf("ingress classification local=%s peer=%s source=%s", local, peer, source)
+				}
+			}
 		}
 	}
 }
@@ -193,6 +216,77 @@ func TestTreeHandshakeAndReadiness(t *testing.T) {
 		t.Fatal(err)
 	}
 	eventually(t, func() bool { return h.rejectedPeerMessages.Load() == 1 })
+}
+
+func TestTreeRejectsSourceFromWrongSideOfEdge(t *testing.T) {
+	h := newHub("G1", "tree")
+	go h.run()
+	server := httptest.NewServer(chatHandler(h))
+	defer server.Close()
+
+	source := newHub("G0", "tree")
+	if err := connectTree(source, "G1", "ws"+strings.TrimPrefix(server.URL, "http")+"/inter-gw"); err != nil {
+		t.Fatal(err)
+	}
+	source.peerLock.RLock()
+	peer := source.peerGateway["G1"]
+	source.peerLock.RUnlock()
+	defer peer.Close()
+
+	// Removing edge G0-G1 puts G3 on G1's side, so a G3 publication cannot
+	// legitimately arrive at G1 from G0. Accepting it permits spoofed routes.
+	if err := peer.WriteJSON(Message{MessageID: "impossible", SenderID: "c3", SourceGateway: "G3", FromGateway: "G0"}); err != nil {
+		t.Fatal(err)
+	}
+	eventually(t, func() bool {
+		return h.rejectedPeerMessages.Load()+h.overlayReceived.Load() > 0
+	})
+	if got := h.rejectedPeerMessages.Load(); got != 1 {
+		t.Fatalf("wrong-side Tree source accepted: rejected=%d received=%d", got, h.overlayReceived.Load())
+	}
+	if got := h.overlayReceived.Load(); got != 0 {
+		t.Fatalf("wrong-side Tree source counted as received: %d", got)
+	}
+}
+
+func TestTreeReconnectsDroppedDialedEdge(t *testing.T) {
+	target := newHub("G1", "tree")
+	go target.run()
+	server := httptest.NewServer(chatHandler(target))
+	defer server.Close()
+	source := newHub("G0", "tree")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	startTreePeersContext(ctx, source, map[string]string{
+		"G1": "ws" + strings.TrimPrefix(server.URL, "http") + "/inter-gw",
+	})
+
+	var first *websocket.Conn
+	eventually(t, func() bool {
+		source.peerLock.RLock()
+		defer source.peerLock.RUnlock()
+		first = source.peerGateway["G1"]
+		return first != nil
+	})
+	if err := first.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// The lower-ID owner of this edge must replace a dead connection without
+	// requiring a process restart.
+	eventually(t, func() bool {
+		source.peerLock.RLock()
+		defer source.peerLock.RUnlock()
+		return source.peerGateway["G1"] != nil && source.peerGateway["G1"] != first
+	})
+	source.peerLock.RLock()
+	reconnected := source.peerGateway["G1"]
+	source.peerLock.RUnlock()
+	if err := reconnected.WriteJSON(Message{MessageID: "after-reconnect", SenderID: "c0", SourceGateway: "G0", FromGateway: "G0"}); err != nil {
+		t.Fatal(err)
+	}
+	eventually(t, func() bool { return target.overlayReceived.Load() == 1 })
+	reconnected.Close()
 }
 
 func TestTreeFourGatewayBroadcast(t *testing.T) {
