@@ -1,5 +1,17 @@
 # Workload replay client (Single and four gateways)
 
+Receipt accounting is owned by each client reader and merged only after replay;
+it does not share a statistics lock with senders. Compact receipt slots are
+allocated before measurement (approximately 16 bytes per client per trace event
+on 64-bit builds). Duplicate and missing deliveries retain their original meaning.
+
+For diagnosis, `-profile-dir <new-directory>` saves CPU, mutex and heap profiles.
+The parent directory must exist. Profiles cover replay and result export; use
+unprofiled runs for latency comparisons. `go tool pprof` can inspect the files;
+when that binary is absent but Go sources are installed, use `go run cmd/pprof`.
+Tree runner `passed` checks delivery/topology correctness; `on_time_target_met`
+separately reports whether at least 99% of expected deliveries arrived within 1 s.
+
 Run from the repository root with Go 1.20+. No changes to the Gorilla library are required. The example chat server needs the opt-in benchmark flag: it preserves JSON payloads and message boundaries and permits messages up to 1 MiB. Its normal browser mode remains the default.
 
 Server, in a separate terminal (or on EC2):
@@ -18,9 +30,40 @@ Replace localhost with the existing server's reachable address. Deploy the updat
 
 ## Four-gateway mode
 
+### Tree implementation
+
+Tree forms a broadcast tree with three bidirectional connections: G0-G1, G0-G2, and G1-G3. See `examples/chat/TREE.md` for full design and browser demo commands.
+
+```powershell
+python cmd/loadgen/test_tree.py --output results/tree-check-01
+python cmd/loadgen/test_tree.py --all --output results/tree-matrix-01
+```
+
+The second command tests all five pilot rates. It verifies complete delivery with zero missing or duplicate messages, exactly 3 overlay transmissions across the cluster per publication, and each directed edge's message count. Delivery correctness does not imply on-time delivery: `on_time_target_met` separately checks the 99% within 1 second target.
+
+When all four gateways and the generator share one development machine, make the
+process parallelism and server queue explicit. The runner records these values in
+each trace directory's `execution.json`:
+
+```powershell
+python cmd/loadgen/test_tree.py --trace workloads/generated/pilot-v1/rate-160.jsonl --client-queue 1024 --server-gomaxprocs 2 --loadgen-gomaxprocs 2 --output results/tree-rate160-01
+```
+
+`GOMAXPROCS` limits simultaneous Go execution in each process; it is not CPU
+affinity or a CPU quota. `/healthz` reports `client_queue_capacity` and
+`client_queue_overflows`. A correctness run is invalid if the overflow counter is
+nonzero. Queue memory must be included later when applying the experiment's
+resource budget.
+
+The publication window controls when trace events are scheduled. Writers finish
+already-scheduled events with the configured write timeout, and the drain interval
+starts after writers finish. `send_completion_lag_ms`, send lag, and scheduled
+latency expose a generator that fell behind; late completion is not reported as
+low latency merely because delivery was preserved.
+
 ### Direct implementation
 
-Direct now has a real six-connection full mesh, with exact peer readiness and per-peer business-message counters. See `examples/chat/DIRECT.md` for deployment and browser demo commands. A client endpoint file (`/ws`) is distinct from the server overlay configuration (`/inter-gw`). The generator's existing JSON protocol and traces work unchanged.
+Direct has a six-connection full mesh, with exact peer readiness and per-peer business-message counters. See `examples/chat/DIRECT.md` for deployment and browser demo commands. A client endpoint file (`/ws`) is distinct from the server overlay configuration (`/inter-gw`). The generator's existing JSON protocol and traces work unchanged.
 
 ```powershell
 python cmd/loadgen/test_direct.py --output results/direct-check-01

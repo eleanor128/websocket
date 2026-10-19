@@ -3,6 +3,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -250,11 +252,13 @@ func run(o options) error {
 		return e
 	}
 	runID := fmt.Sprintf("run-%d", time.Now().UnixNano())
-	var mu sync.Mutex
 	conns := map[string]*websocket.Conn{}
 	queues := map[string]chan int{}
 	sends := make([]Send, len(events))
-	received := map[string]map[string]*Receipt{}
+	received := map[string]*receiverJournal{}
+	for _, client := range b.Clients {
+		received[client.ID] = newReceiverJournal(len(events))
+	}
 	index := map[string]int{}
 	allowed := map[string]map[string]bool{}
 	for name, set := range b.Sets {
@@ -268,7 +272,7 @@ func run(o options) error {
 		sends[i] = Send{ID: v.ID, Scheduled: v.Offset, Start: -1, End: -1}
 	}
 	var readers, writers sync.WaitGroup
-	stopping := false
+	var stopping atomic.Bool
 	unexpected, disconnects := 0, 0
 	unexpectedReasons := map[string]int{}
 	disconnectReasons := map[string]string{}
@@ -307,59 +311,51 @@ func run(o options) error {
 	}
 	// Immutable future start, shared monotonic clock for all send/receive timestamps.
 	start := time.Now().Add(o.settle)
-	cutoff := o.duration + o.drain
 	for _, client := range b.Clients {
 		id := client.ID
 		c := conns[id]
 		q := queues[id]
+		journal := received[id]
 		readers.Add(1)
 		go func() {
 			defer readers.Done()
+			var frame bytes.Buffer
+			frame.Grow(2048)
+			var w Wire
 			for {
-				_, data, err := c.ReadMessage()
+				_, message, err := c.NextReader()
+				if err == nil {
+					frame.Reset()
+					_, err = frame.ReadFrom(message)
+				}
 				at := time.Since(start)
 				if err != nil {
-					mu.Lock()
-					if !stopping {
-						disconnects++
-						stats[clientGateway[id]].Disconnects++
-						disconnectReasons[id] = err.Error()
+					if !stopping.Load() {
+						journal.disconnect = err.Error()
 					}
-					mu.Unlock()
 					return
 				}
-				var w Wire
-				err = json.Unmarshal(data, &w)
-				mu.Lock()
+				// Clear all fields: a malformed/partial envelope must not inherit
+				// a prior message's run, sender or payload when storage is reused.
+				w = Wire{}
+				err = json.Unmarshal(frame.Bytes(), &w)
 				i, ok := index[w.ID]
 				if err != nil || w.Run != runID || !ok {
-					unexpected++
 					if err != nil {
-						unexpectedReasons["invalid_json"]++
+						journal.unexpected["invalid_json"]++
 					} else if w.Run != runID {
-						unexpectedReasons["wrong_run"]++
+						journal.unexpected["wrong_run"]++
 					} else {
-						unexpectedReasons["unknown_message_id"]++
+						journal.unexpected["unknown_message_id"]++
 					}
-					mu.Unlock()
 					continue
 				}
 				ev := events[i]
-				if !allowed[ev.Set][id] || w.Payload != ev.Payload || w.Sender != ev.Sender || at < 0 || at >= cutoff {
-					unexpected++
-					unexpectedReasons["recipient_payload_sender_or_time_mismatch"]++
-					mu.Unlock()
+				if !allowed[ev.Set][id] || w.Payload != ev.Payload || w.Sender != ev.Sender || at < 0 {
+					journal.unexpected["recipient_payload_sender_or_time_mismatch"]++
 					continue
 				}
-				if received[w.ID] == nil {
-					received[w.ID] = map[string]*Receipt{}
-				}
-				if r := received[w.ID][id]; r != nil {
-					r.Copies++
-				} else {
-					received[w.ID][id] = &Receipt{ID: w.ID, Client: id, At: int64(at), Copies: 1}
-				}
-				mu.Unlock()
+				journal.record(i, int64(at))
 			}
 		}()
 		writers.Add(1)
@@ -368,27 +364,13 @@ func run(o options) error {
 			for i := range q {
 				v := events[i]
 				at := time.Since(start)
-				if at >= o.duration {
-					mu.Lock()
-					sends[i].Error = "measurement ended before write"
-					mu.Unlock()
-					continue
-				}
-				mu.Lock()
 				sends[i].Start = int64(at)
-				mu.Unlock()
-				until := time.Now().Add(o.deadline)
-				if end := start.Add(o.duration); until.After(end) {
-					until = end
-				}
-				c.SetWriteDeadline(until)
+				c.SetWriteDeadline(time.Now().Add(o.deadline))
 				err := c.WriteJSON(Wire{Run: runID, ID: v.ID, Sender: v.Sender, Payload: v.Payload})
-				mu.Lock()
 				sends[i].End = int64(time.Since(start))
 				if err != nil {
 					sends[i].Error = err.Error()
 				}
-				mu.Unlock()
 			}
 		}()
 	}
@@ -399,25 +381,35 @@ func run(o options) error {
 		select {
 		case queues[v.Sender] <- i:
 		default:
-			mu.Lock()
 			sends[i].Error = "sender queue full"
-			mu.Unlock()
 		}
 	}
 	for _, q := range queues {
 		close(q)
 	}
 	writers.Wait()
-	if wait := time.Until(start.Add(cutoff)); wait > 0 {
-		time.Sleep(wait)
+	sendCompletion := time.Since(start)
+	if o.drain > 0 {
+		time.Sleep(o.drain)
 	}
-	mu.Lock()
-	stopping = true
-	mu.Unlock()
+	measurementEnd := time.Since(start)
+	stopping.Store(true)
 	for _, c := range conns {
 		c.Close()
 	}
 	readers.Wait()
+	// Only aggregate after all per-client readers have stopped.
+	for id, journal := range received {
+		for reason, count := range journal.unexpected {
+			unexpected += count
+			unexpectedReasons[reason] += count
+		}
+		if journal.disconnect != "" {
+			disconnects++
+			stats[clientGateway[id]].Disconnects++
+			disconnectReasons[id] = journal.disconnect
+		}
+	}
 	var expected, unique, onTime, late, duplicates, inWindow, success, failed int
 	var latencies, lags, actualLatencies []int64
 	receiptFile, err := os.Create(filepath.Join(o.output, "receipts.jsonl"))
@@ -444,8 +436,8 @@ func run(o options) error {
 		for _, id := range b.Sets[v.Set] {
 			destStats := stats[clientGateway[id]]
 			destStats.Expected++
-			r := received[v.ID][id]
-			if r == nil {
+			r := received[id].receipts[i]
+			if r.Copies == 0 {
 				destStats.Missing++
 				continue
 			}
@@ -466,7 +458,7 @@ func run(o options) error {
 			if r.At < int64(o.duration) {
 				inWindow++
 			}
-			if err = enc.Encode(r); err != nil {
+			if err = enc.Encode(Receipt{ID: v.ID, Client: id, At: r.At, Copies: r.Copies}); err != nil {
 				receiptFile.Close()
 				return err
 			}
@@ -482,7 +474,11 @@ func run(o options) error {
 	if err = save(filepath.Join(o.output, "sends.json"), sends); err != nil {
 		return err
 	}
-	summary := map[string]any{"run_id": runID, "endpoint": o.endpoint, "clients": len(b.Clients), "trace_sha256": hash(o.trace), "clients_sha256": hash(o.clients), "duration_seconds": o.duration.Seconds(), "drain_seconds": o.drain.Seconds(), "settle_seconds": o.settle.Seconds(), "sender_queue_capacity": o.queue, "write_timeout_seconds": o.deadline.Seconds(), "scheduled_messages": len(events), "successful_writes": success, "failed_or_unsent": failed, "scheduled_messages_per_second": float64(len(events)) / o.duration.Seconds(), "successful_writes_per_second": float64(success) / o.duration.Seconds(), "expected_deliveries": expected, "unique_deliveries": unique, "on_time": onTime, "late": late, "missing": expected - unique, "duplicates": duplicates, "unexpected_messages": unexpected, "disconnects": disconnects, "on_time_fraction": float64(onTime) / float64(expected), "unique_deliveries_per_second": float64(inWindow) / o.duration.Seconds(), "drain_unique_deliveries": unique - inWindow, "scheduled_latency_p50_ms": percentile(latencies, .5), "scheduled_latency_p95_ms": percentile(latencies, .95), "scheduled_latency_p99_ms": percentile(latencies, .99), "actual_send_latency_p95_ms": percentile(actualLatencies, .95), "send_lag_p95_ms": percentile(lags, .95), "send_lag_max_ms": percentile(lags, 1), "latency_sample_count": len(latencies), "transport_clean": failed == 0 && disconnects == 0 && unexpected == 0, "warmup": "connection settling only; no message warmup"}
+	sendCompletionLag := sendCompletion - o.duration
+	if sendCompletionLag < 0 {
+		sendCompletionLag = 0
+	}
+	summary := map[string]any{"run_id": runID, "endpoint": o.endpoint, "clients": len(b.Clients), "trace_sha256": hash(o.trace), "clients_sha256": hash(o.clients), "duration_seconds": o.duration.Seconds(), "drain_seconds": o.drain.Seconds(), "settle_seconds": o.settle.Seconds(), "sender_queue_capacity": o.queue, "write_timeout_seconds": o.deadline.Seconds(), "scheduled_messages": len(events), "successful_writes": success, "failed_or_unsent": failed, "scheduled_messages_per_second": float64(len(events)) / o.duration.Seconds(), "successful_writes_per_second": float64(success) / o.duration.Seconds(), "send_completion_lag_ms": float64(sendCompletionLag) / float64(time.Millisecond), "measurement_elapsed_seconds": measurementEnd.Seconds(), "expected_deliveries": expected, "unique_deliveries": unique, "on_time": onTime, "late": late, "missing": expected - unique, "duplicates": duplicates, "unexpected_messages": unexpected, "disconnects": disconnects, "on_time_fraction": float64(onTime) / float64(expected), "unique_deliveries_per_second": float64(inWindow) / o.duration.Seconds(), "drain_unique_deliveries": unique - inWindow, "scheduled_latency_p50_ms": percentile(latencies, .5), "scheduled_latency_p95_ms": percentile(latencies, .95), "scheduled_latency_p99_ms": percentile(latencies, .99), "actual_send_latency_p95_ms": percentile(actualLatencies, .95), "send_lag_p95_ms": percentile(lags, .95), "send_lag_max_ms": percentile(lags, 1), "latency_sample_count": len(latencies), "transport_clean": failed == 0 && disconnects == 0 && unexpected == 0, "warmup": "connection settling only; no message warmup"}
 	summary["mode"] = mode
 	summary["endpoints"] = configured
 	summary["gateway_stats"] = stats
@@ -501,6 +497,8 @@ func run(o options) error {
 }
 func main() {
 	var o options
+	var profileDir string
+	flag.StringVar(&profileDir, "profile-dir", "", "optional new directory for CPU/mutex/heap diagnostic profiles")
 	flag.StringVar(&o.endpoint, "url", "", "single server WebSocket endpoint (default ws://localhost:8080/ws)")
 	flag.StringVar(&o.gateways, "gateways", "", "JSON file mapping G0-G3 to WebSocket endpoints; mutually exclusive with -url")
 	flag.StringVar(&o.clients, "clients", "workloads/generated/pilot-v1/clients.json", "client table")
@@ -512,7 +510,7 @@ func main() {
 	flag.DurationVar(&o.deadline, "write-timeout", 5*time.Second, "maximum write wait")
 	flag.IntVar(&o.queue, "queue", 256, "bounded queue per sender")
 	flag.Parse()
-	if err := run(o); err != nil {
+	if err := profiledRun(o, profileDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

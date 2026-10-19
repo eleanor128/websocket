@@ -134,6 +134,18 @@ func peerStatus(h *Hub) ([]string, bool) {
 		}
 		return ids, validGatewayID(h.gatewayID)
 	}
+	if isTree(h) {
+		expected := expectedTreePeers(h.gatewayID)
+		if expected == nil || len(ids) != len(expected) {
+			return ids, false
+		}
+		for _, e := range expected {
+			if _, ok := h.peerGateway[e]; !ok {
+				return ids, false
+			}
+		}
+		return ids, validGatewayID(h.gatewayID)
+	}
 	if isStar(h) {
 		if h.gatewayID == "G0" {
 			return ids, len(ids) == 3 && ids[0] == "G1" && ids[1] == "G2" && ids[2] == "G3"

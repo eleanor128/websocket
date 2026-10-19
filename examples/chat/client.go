@@ -33,7 +33,8 @@ const (
 )
 
 var (
-	benchmark = flag.Bool("benchmark", false, "preserve JSON message boundaries for workload replay")
+	benchmark           = flag.Bool("benchmark", false, "preserve JSON message boundaries for workload replay")
+	clientQueueCapacity = flag.Int("client-queue", 256, "bounded outbound message queue per client")
 )
 
 var upgrader = websocket.Upgrader{
@@ -130,16 +131,11 @@ func (c *Client) writePump() {
 				return
 			}
 
-			w, err := c.conn.NextWriter(websocket.TextMessage)
-			if err != nil {
-				return
-			}
-			w.Write(message)
-
 			// Every mode now emits JSON envelopes. Preserve one envelope per
 			// WebSocket message, including concurrent browser publications.
-
-			if err := w.Close(); err != nil {
+			// WriteMessage uses the server fast path without allocating a writer
+			// for every recipient, and propagates payload write failures.
+			if err := c.conn.WriteMessage(websocket.TextMessage, message); err != nil {
 				return
 			}
 		case <-ticker.C:
@@ -162,7 +158,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 		name = "Anonymous"
 	}
-	client := &Client{hub: hub, name: name, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: hub, name: name, conn: conn, send: make(chan []byte, *clientQueueCapacity)}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
