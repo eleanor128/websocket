@@ -1,0 +1,112 @@
+services:
+  shaper0:
+    image: nicolaka/netshoot
+    network_mode: "service:gateway0"
+    cap_add:
+      - NET_ADMIN
+    environment:
+      TC_RATE: "${TC_RATE:-500kbit}"
+      TC_DELAY: "${TC_DELAY:-20ms}"
+      TC_BURST: "${TC_BURST:-32k}"
+      TC_LIMIT: "${TC_LIMIT:-1000}"
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        tc qdisc replace dev eth1 root handle 1: htb default 10
+        tc class replace dev eth1 parent 1: classid 1:10 \
+          htb rate "$${TC_RATE}" ceil "$${TC_RATE}" burst "$${TC_BURST}"
+        tc qdisc replace dev eth1 parent 1:10 handle 10: \
+          netem delay "$${TC_DELAY}" limit "$${TC_LIMIT}"
+        tc -s qdisc show dev eth1
+        exec tail -f /dev/null
+    healthcheck:
+      test: ["CMD-SHELL", "tc qdisc show dev eth1 | grep -q 'htb 1:' && tc qdisc show dev eth1 | grep -q 'netem 10:'"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+
+  shaper1:
+    image: nicolaka/netshoot
+    network_mode: "service:gateway1"
+    cap_add:
+      - NET_ADMIN
+    environment:
+      TC_RATE: "${TC_RATE:-500kbit}"
+      TC_DELAY: "${TC_DELAY:-20ms}"
+      TC_BURST: "${TC_BURST:-32k}"
+      TC_LIMIT: "${TC_LIMIT:-1000}"
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        tc qdisc replace dev eth1 root handle 1: htb default 10
+        tc class replace dev eth1 parent 1: classid 1:10 \
+          htb rate "$${TC_RATE}" ceil "$${TC_RATE}" burst "$${TC_BURST}"
+        tc qdisc replace dev eth1 parent 1:10 handle 10: \
+          netem delay "$${TC_DELAY}" limit "$${TC_LIMIT}"
+        tc -s qdisc show dev eth1
+        exec tail -f /dev/null
+    healthcheck:
+      test: ["CMD-SHELL", "tc qdisc show dev eth1 | grep -q 'htb 1:' && tc qdisc show dev eth1 | grep -q 'netem 10:'"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+
+  shaper2:
+    image: nicolaka/netshoot
+    network_mode: "service:gateway2"
+    cap_add:
+      - NET_ADMIN
+    environment:
+      TC_RATE: "${TC_RATE:-500kbit}"
+      TC_DELAY: "${TC_DELAY:-20ms}"
+      TC_BURST: "${TC_BURST:-32k}"
+      TC_LIMIT: "${TC_LIMIT:-1000}"
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        tc qdisc replace dev eth1 root handle 1: htb default 10
+        tc class replace dev eth1 parent 1: classid 1:10 \
+          htb rate "$${TC_RATE}" ceil "$${TC_RATE}" burst "$${TC_BURST}"
+        tc qdisc replace dev eth1 parent 1:10 handle 10: \
+          netem delay "$${TC_DELAY}" limit "$${TC_LIMIT}"
+        tc -s qdisc show dev eth1
+        exec tail -f /dev/null
+    healthcheck:
+      test: ["CMD-SHELL", "tc qdisc show dev eth1 | grep -q 'htb 1:' && tc qdisc show dev eth1 | grep -q 'netem 10:'"]
+      interval: 2s
+      timeout: 1s
+      retries: 3
+
+  shaper3:
+    image: nicolaka/netshoot
+    network_mode: "service:gateway3"
+    cap_add:
+      - NET_ADMIN
+    environment:
+      TC_RATE: "${TC_RATE:-500kbit}"
+      TC_DELAY: "${TC_DELAY:-20ms}"
+      TC_BURST: "${TC_BURST:-32k}"
+      TC_LIMIT: "${TC_LIMIT:-1000}"
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        tc qdisc replace dev eth1 root handle 1: htb default 10
+        tc class replace dev eth1 parent 1: classid 1:10 \
+          htb rate "$${TC_RATE}" ceil "$${TC_RATE}" burst "$${TC_BURST}"
+        tc qdisc replace dev eth1 parent 1:10 handle 10: \
+          netem delay "$${TC_DELAY}" limit "$${TC_LIMIT}"
+        tc -s qdisc show dev eth1
+        exec tail -f /dev/null
+    healthcheck:
+      test: ["CMD-SHELL", "tc qdisc show dev eth1 | grep -q 'htb 1:' && tc qdisc show dev eth1 | grep -q 'netem 10:'"]
+      interval: 2s
+      timeout: 1s
+      retries: 3

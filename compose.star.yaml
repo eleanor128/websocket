@@ -1,0 +1,95 @@
+services:
+  gateway0:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "star"
+      - "-id"
+      - "G0"
+    ports:
+      - "8081:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g0-overlay
+
+  gateway1:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "star"
+      - "-id"
+      - "G1"
+      - "-peers"
+      - "ws://g0-overlay:8080/inter-gw"
+    ports:
+      - "8082:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g1-overlay
+
+  gateway2:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "star"
+      - "-id"
+      - "G2"
+      - "-peers"
+      - "ws://g0-overlay:8080/inter-gw"
+    ports:
+      - "8083:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g2-overlay
+
+  gateway3:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "star"
+      - "-id"
+      - "G3"
+      - "-peers"
+      - "ws://g0-overlay:8080/inter-gw"
+    ports:
+      - "8084:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g3-overlay
+
+networks:
+  client-net:
+  overlay-net:
+    internal: true

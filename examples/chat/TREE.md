@@ -54,6 +54,53 @@ go run . -topology tree -id G3 -addr :8084 -tree-peers tree-peers.example.json
 
 Visit `http://localhost:8081/` through `http://localhost:8084/`. Send a message from any browser; all four windows will receive exactly one copy. Inspect `http://localhost:8081/healthz` to confirm `topology: tree`, `ready: true`, and correct peer IDs.
 
+## Docker Compose with overlay traffic control
+
+From the repository root, `compose.tree.yaml` starts the G0-G1, G0-G2, G1-G3
+tree with client traffic on `eth0` and overlay traffic on `eth1`.
+`compose.tc.yaml` enters each gateway's network namespace and shapes only
+`eth1`; the client-facing host ports remain outside the overlay budget.
+
+Only run one topology on the default ports at a time. Stop the current topology,
+then start Tree with the same budget used for Direct and Star:
+
+```powershell
+$env:TC_RATE = "500kbit"
+$env:TC_DELAY = "20ms"
+
+docker compose `
+  -f compose.tree.yaml `
+  -f compose.tc.yaml `
+  up -d --wait
+```
+
+The defaults are `TC_RATE=500kbit`, `TC_DELAY=20ms`, `TC_BURST=32k`, and
+`TC_LIMIT=1000`. Check all four gateways before starting load: G0 must list
+G1/G2, G1 must list G0/G3, G2 must list G0, and G3 must list G1. Check the
+actual qdisc separately:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8081/healthz
+
+docker compose `
+  -f compose.tree.yaml `
+  -f compose.tc.yaml `
+  exec shaper0 tc -s qdisc show dev eth1
+```
+
+The output must contain `htb 1:` and `netem 10:`; after a load run its `Sent`
+counters must increase. `noqueue` means the budget was not applied. The existing
+`cmd/loadgen/gateways.example.json` already uses ports 8081 through 8084.
+
+Stop Tree with:
+
+```powershell
+docker compose `
+  -f compose.tree.yaml `
+  -f compose.tc.yaml `
+  down
+```
+
 ## Automated verification
 
 ```powershell

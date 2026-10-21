@@ -9,7 +9,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -88,16 +87,7 @@ func main() {
 
 	// 若有指定的 peers 則建立跨 Gateway 連線
 	if *peers != "" {
-		for _, peerAddr := range strings.Split(*peers, ",") {
-			go func(url string) {
-				err := connectGateway(hub, url)
-				if err == nil {
-					log.Printf("Connected to peer at %s\n", url)
-				} else {
-					log.Printf("Failed to connect to peer %s: %v\n", url, err)
-				}
-			}(peerAddr)
-		}
+		startStarPeer(hub, *peers)
 	}
 
 	err := http.ListenAndServe(*addr, chatHandler(hub))

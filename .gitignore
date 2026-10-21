@@ -32,10 +32,9 @@ comp631.pem
 
 # Local Python caches and agent planning records
 /cmd/loadgen/__pycache__/
+/.docker-codex/
 
 
 # docker files
 .dockerignore
-Dockerfile.gateway
-compose.star.yaml
-
+.docker-codex
