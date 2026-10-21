@@ -134,10 +134,107 @@ Unique delivery throughput counts receipts within measurement only, divided by d
 
 This first version provides connection settling, not low-load message warm-up. It retains first-receipt state in memory, proportional to expected delivered pairs, then writes buffered logs after measurement. The highest pilot trace has about 1.94 million expected pairs: monitor memory/CPU before interpreting capacity, and use a smaller trace for debugging. It does not measure server resources, apply bandwidth limits, reconnect failed clients, or implement multi-host clock synchronization. Those belong to the experiment runner/environment. The generator should have sufficient capacity; shape server traffic according to Experiment A/B.
 
+## Saturation visualization
+
+`plot_saturation.py` reads existing load-generator `summary.json` files without
+changing the experiment. It accepts a five-rate matrix directory, a `run`
+directory, or an individual loadgen output directory. Repeat `--series` to
+combine topologies, bandwidth budgets, and independent repetitions:
+
+```powershell
+python cmd/loadgen/plot_saturation.py `
+  --series "star|unlimited|results/star-matrix-01" `
+  --output results/saturation-star-unlimited
+```
+
+For a shaped Docker run, use the configured aggregate overlay egress budget as
+the middle field. Supplying `--message-bytes` enables the proposal-model overlay
+demand estimate. The value is `S`, the serialized overlay message size in bytes;
+do not silently substitute the chat payload size.
+
+```powershell
+python cmd/loadgen/plot_saturation.py `
+  --series "star|0.5mbit|results/docker-star-500k-matrix-01" `
+  --message-bytes 300 `
+  --output results/saturation-star-500k-01
+```
+
+Multiple single-rate output directories can be supplied separately; runs with
+the same topology, budget and rate are treated as repetitions and their plotted
+error bars show the min-max range:
+
+```powershell
+python cmd/loadgen/plot_saturation.py `
+  --series "star|0.5mbit|results/docker-star-500k-rate10-01" `
+  --series "star|0.5mbit|results/docker-star-500k-rate20-01" `
+  --series "star|0.5mbit|results/docker-star-500k-rate40-01" `
+  --series "star|0.5mbit|results/docker-star-500k-rate80-01" `
+  --series "star|0.5mbit|results/docker-star-500k-rate160-01" `
+  --message-bytes 300 `
+  --output results/saturation-star-500k-01
+```
+
+The new output directory contains a standalone `index.html`, one observed SVG
+figure, an optional analytical overlay SVG, CSV data, and an auditable JSON
+summary. The observed state is deliberately conservative:
+
+- `delivery-limited`: delivery or send success is below 99.9%, or the run has a
+  disconnect or unexpected message.
+- `pressure`: at least 99% delivery is preserved, but on-time delivery is below
+  99%, scheduled P99 exceeds one second, or send-lag P95 exceeds 50 ms.
+- `clean`: none of those signals occurred. This does not prove unused capacity.
+
+The overlay figure implements the proposal formula using the pilot manifest and
+labels the result as estimated. A budget passed on the command line is metadata;
+the report does not claim that Docker/`tc` applied it. Check the shaper counters
+independently before interpreting a colored utilization cell as a real network
+limit. For the final experiment, combine all three topologies and at least three
+repetitions per rate in one report.
+
+Inside `index.html`, the Overlay budget model is editable rather than a fixed
+image. Change its title, serialized message size `S`, series labels, or per-node
+budget in Mbps and the cells update immediately. A blank budget means
+unlimited. **Download edited SVG** exports the current edited view; the original
+`overlay_model.svg` remains as the reproducible command-line output.
+
+## Serialized overlay size and demand
+
+`overlaycalc` reconstructs the bytes emitted by the current protocol using the
+same Go `encoding/json` behavior as the load generator and gateways. It reports
+payload, load-generator ingress JSON, gateway-local JSON and forwarded overlay
+JSON separately. Its `overlay_envelope_json_bytes.mean_bytes` is the proposal's
+`S`. It then walks every event's actual `source_gateway` through Direct, Star and
+Tree and calculates each sending gateway's average overlay Mbps.
+
+```powershell
+go run ./cmd/overlaycalc `
+  -manifest workloads/generated/pilot-v1/manifest.json `
+  -output results/overlay-demand-pilot-v1-01
+```
+
+The default representative run ID has the same byte length as the load
+generator's normal `run-<UnixNano>` value. For byte-exact accounting of a saved
+run, pass its real ID:
+
+```powershell
+$runId = (Get-Content results/docker-star-rate10-01/summary.json -Raw |
+  ConvertFrom-Json).run_id
+go run ./cmd/overlaycalc -run-id $runId `
+  -output results/overlay-demand-pilot-v1-actual-run-id-01
+```
+
+The output contains `overlay-demand.json` for audit and
+`overlay-demand.csv` for plotting. `average_json_mbps` is the application-level
+value corresponding to the proposal formula. `average_websocket_mbps` also adds
+the data-frame header and client mask where applicable. Neither includes
+TCP/IP headers, ACKs, retransmissions, connection traffic, ping/pong, or TLS;
+use the shaper's `tc -s qdisc` counters for observed interface bytes.
+
 Validation:
 
 ```powershell
-go test ./cmd/loadgen ./examples/chat
+go test ./cmd/loadgen ./cmd/overlaycalc ./examples/chat
+python cmd/loadgen/test_plot_saturation.py
 ```
 
 Integration tests start four separate real WebSocket listeners with a simulated broadcast fabric. They verify all four sending origins, client allocation, preserved URL query parameters, normal/duplicate/local-only delivery, gateway disconnection, configuration rejection and setup failure diagnostics. They do not certify a production Star/Tree/Direct implementation or EC2 network conditions.

@@ -30,6 +30,54 @@ Before connecting clients, inspect `http://localhost:8081/healthz` and the other
 
 On multiple EC2 hosts, change overlay addresses to reachable private addresses and client addresses to addresses reachable from the generator/browser. IDs in the handshake detect accidental wrong endpoints/topologies; they are not cryptographic authentication.
 
+## Docker Compose with overlay traffic control
+
+From the repository root, `compose.direct.yaml` starts four Direct gateways with
+client traffic on `eth0` and the complete-mesh overlay on `eth1`.
+`compose.tc.yaml` shares each gateway's network namespace and attaches HTB plus
+netem only to `eth1`, so the four client-facing host ports are not shaped.
+
+Only run one topology on the default ports at a time. Stop the current topology,
+then start Direct with the desired experiment parameters:
+
+```powershell
+$env:TC_RATE = "500kbit"
+$env:TC_DELAY = "20ms"
+
+docker compose `
+  -f compose.direct.yaml `
+  -f compose.tc.yaml `
+  up -d --wait
+```
+
+The defaults are `TC_RATE=500kbit`, `TC_DELAY=20ms`, `TC_BURST=32k`, and
+`TC_LIMIT=1000`. Verify all four `/healthz` responses show `topology=direct`,
+`ready=true`, and exactly three peers. Also verify the shaper is real rather than
+assuming a healthy gateway implies active traffic control:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8081/healthz
+
+docker compose `
+  -f compose.direct.yaml `
+  -f compose.tc.yaml `
+  exec shaper0 tc -s qdisc show dev eth1
+```
+
+The qdisc output must contain both `htb 1:` and `netem 10:`. After a load run,
+its `Sent` counters must increase. `noqueue` means the network budget was not
+applied. The existing `cmd/loadgen/gateways.example.json` points to the default
+ports 8081 through 8084.
+
+Stop this topology with the same file set:
+
+```powershell
+docker compose `
+  -f compose.direct.yaml `
+  -f compose.tc.yaml `
+  down
+```
+
 ## Run existing load generator
 
 Restart all four gateways with the same commands plus `-benchmark`, then run from the repository root:

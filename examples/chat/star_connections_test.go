@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -99,4 +101,35 @@ func TestStarStartupConfiguration(t *testing.T) {
 			t.Fatalf("%+v: %v", tc, err)
 		}
 	}
+}
+
+func TestStarRetriesStartupAndReconnects(t *testing.T) {
+	target := newHub("G0", "star")
+	server := httptest.NewUnstartedServer(chatHandler(target))
+	address := "ws://" + server.Listener.Addr().String() + "/inter-gw"
+	source := newHub("G1", "star")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go maintainStarPeer(ctx, source, address)
+
+	// Let the first dial fail before G0 starts listening. The leaf must retry.
+	time.Sleep(250 * time.Millisecond)
+	server.Start()
+	defer server.Close()
+	var first *websocket.Conn
+	eventually(t, func() bool {
+		source.peerLock.RLock()
+		defer source.peerLock.RUnlock()
+		first = source.peerGateway["G0"]
+		return first != nil
+	})
+
+	if err := first.Close(); err != nil {
+		t.Fatal(err)
+	}
+	eventually(t, func() bool {
+		source.peerLock.RLock()
+		defer source.peerLock.RUnlock()
+		return source.peerGateway["G0"] != nil && source.peerGateway["G0"] != first
+	})
 }

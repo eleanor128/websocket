@@ -1,6 +1,6 @@
 {
-  "G0": "ws://127.0.0.1:8081/inter-gw",
-  "G1": "ws://127.0.0.1:8082/inter-gw",
-  "G2": "ws://127.0.0.1:8083/inter-gw",
-  "G3": "ws://127.0.0.1:8084/inter-gw"
+  "G0": "ws://g0-overlay:8080/inter-gw",
+  "G1": "ws://g1-overlay:8080/inter-gw",
+  "G2": "ws://g2-overlay:8080/inter-gw",
+  "G3": "ws://g3-overlay:8080/inter-gw"
 }

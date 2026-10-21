@@ -1,0 +1,23 @@
+FROM golang:1.20-alpine AS build
+
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY *.go ./
+COPY examples/chat ./examples/chat
+
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -trimpath \
+    -ldflags="-s -w" \
+    -o /out/chat \
+    ./examples/chat
+
+FROM scratch
+
+COPY --from=build /out/chat /chat
+
+EXPOSE 8080
+
+ENTRYPOINT ["/chat"]

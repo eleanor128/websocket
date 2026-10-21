@@ -1,0 +1,113 @@
+services:
+  gateway0:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "direct"
+      - "-id"
+      - "G0"
+      - "-direct-peers"
+      - "/config/direct-peers.json"
+    configs:
+      - source: direct-peers
+        target: /config/direct-peers.json
+    ports:
+      - "${G0_PORT:-8081}:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g0-overlay
+
+  gateway1:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "direct"
+      - "-id"
+      - "G1"
+      - "-direct-peers"
+      - "/config/direct-peers.json"
+    configs:
+      - source: direct-peers
+        target: /config/direct-peers.json
+    ports:
+      - "${G1_PORT:-8082}:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g1-overlay
+
+  gateway2:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "direct"
+      - "-id"
+      - "G2"
+      - "-direct-peers"
+      - "/config/direct-peers.json"
+    configs:
+      - source: direct-peers
+        target: /config/direct-peers.json
+    ports:
+      - "${G2_PORT:-8083}:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g2-overlay
+
+  gateway3:
+    image: comp631:local
+    command:
+      - "-benchmark"
+      - "-addr"
+      - ":8080"
+      - "-topology"
+      - "direct"
+      - "-id"
+      - "G3"
+      - "-direct-peers"
+      - "/config/direct-peers.json"
+    configs:
+      - source: direct-peers
+        target: /config/direct-peers.json
+    ports:
+      - "${G3_PORT:-8084}:8080"
+    networks:
+      client-net:
+        interface_name: eth0
+        gw_priority: 1
+      overlay-net:
+        interface_name: eth1
+        aliases:
+          - g3-overlay
+
+configs:
+  direct-peers:
+    file: ./examples/chat/direct-peers.example.json
+
+networks:
+  client-net:
+  overlay-net:
+    internal: true

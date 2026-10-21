@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/gorilla/websocket"
+	"log"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 func isStar(h *Hub) bool { _, ok := h.topologyStrategy.(*StarTopology); return ok }
@@ -65,4 +68,56 @@ func connectGateway(h *Hub, address string) error {
 	h.peerLock.Unlock()
 	go readPeerMessages(h, conn)
 	return nil
+}
+
+func startStarPeer(h *Hub, address string) {
+	go maintainStarPeer(context.Background(), h, address)
+}
+
+// maintainStarPeer makes container startup order and transient overlay
+// failures harmless. A Star leaf owns its single outgoing edge to G0, so it
+// is also responsible for replacing that edge after a disconnect.
+func maintainStarPeer(ctx context.Context, h *Hub, address string) {
+	retry := 200 * time.Millisecond
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		h.peerLock.RLock()
+		connected := h.peerGateway["G0"] != nil
+		h.peerLock.RUnlock()
+		if connected {
+			retry = 200 * time.Millisecond
+			if !waitStarRetry(ctx, 100*time.Millisecond) {
+				return
+			}
+			continue
+		}
+
+		if err := connectGateway(h, address); err == nil {
+			log.Printf("Star connected %s <-> G0", h.gatewayID)
+			retry = 200 * time.Millisecond
+		} else {
+			if !waitStarRetry(ctx, retry) {
+				return
+			}
+			if retry < 2*time.Second {
+				retry *= 2
+			}
+		}
+	}
+}
+
+func waitStarRetry(ctx context.Context, delay time.Duration) bool {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-timer.C:
+		return true
+	}
 }
